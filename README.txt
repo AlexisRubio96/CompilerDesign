@@ -20,5 +20,4 @@ To run, type:
 Where <file_name> is the name of a Chimera source file. You can try with
 these files:
 
-   * prog1.bcup
-   * prog2.bcup
+   * hello.chimera

@@ -1,0 +1,17 @@
+/* Header comment
+ */
+
+// First comment
+program                     // Second comment
+    WrStr("Hello");
+    // Third Comment
+    /*Fourth comment*/ WrLn();
+    /* Fifth
+       com-
+       ment
+    */	
+    WrStr("World") /*Sixth comment "6" = ;*/;
+    /**/
+    WrStr("!");//        
+end;
+/*Last comment*/                        
