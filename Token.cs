@@ -1,6 +1,7 @@
 /*
-  Buttercup compiler - Token class for the scanner.
-  Copyright (C) 2013 Ariel Ortiz, ITESM CEM
+  Chimera compiler - Token class for the scanner.
+  Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
+  Jorge Alexis Rubio 
   
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,7 +19,7 @@
 
 using System;
 
-namespace Buttercup {
+namespace Chimera {
 
     class Token {
 

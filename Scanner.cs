@@ -1,7 +1,7 @@
 /*
-  Buttercup compiler - This class performs the lexical analysis, 
-  (a.k.a. scanning).
-  Copyright (C) 2013 Ariel Ortiz, ITESM CEM
+  Chimera compiler - This class performs the lexical analysis.
+  Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
+  Jorge Alexis Rubio  
   
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Buttercup {
+namespace Chimera {
 
     class Scanner {
 

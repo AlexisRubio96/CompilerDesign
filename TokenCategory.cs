@@ -1,7 +1,8 @@
 /*
-  Buttercup compiler - Token categories for the scanner.
-  Copyright (C) 2013 Ariel Ortiz, ITESM CEM
-  
+  Chimera compiler - Token categories for the scanner.
+  Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
+  Jorge Alexis Rubio 
+
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +17,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Buttercup {
+namespace Chimera {
 
     enum TokenCategory {
         AND,

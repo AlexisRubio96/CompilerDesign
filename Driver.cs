@@ -1,6 +1,7 @@
 /*
-  Buttercup compiler - Program driver.
-  Copyright (C) 2013 Ariel Ortiz, ITESM CEM
+  Chimera compiler - Program driver.
+  Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
+  Jorge Alexis Rubio 
   
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +21,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace Buttercup {
+namespace Chimera {
 
     public class Driver {
 
@@ -33,9 +34,9 @@ namespace Buttercup {
 
         //-----------------------------------------------------------
         void PrintAppHeader() {
-            Console.WriteLine("Buttercup compiler, version " + VERSION);
-            Console.WriteLine("Copyright \u00A9 2013 by A. Ortiz, ITESM CEM."                
-            );
+            Console.WriteLine("Chimera compiler, version " + VERSION);
+            Console.WriteLine(
+                "Copyright \u00A9 2019 by V. Ochoa, R. García & J.A. Rubio.");
             Console.WriteLine("This program is free software; you may "
                 + "redistribute it under the terms of");
             Console.WriteLine("the GNU General Public License version 3 or "

@@ -1,4 +1,4 @@
-Buttercup compiler, version 0.1
+Chimera compiler, version 0.1
 ===============================
 
 This program is free software. You may redistribute it under the terms of
@@ -15,9 +15,9 @@ To build, at the terminal type:
    
 To run, type:
 
-    ./buttercup.exe <file_name>
+    ./chimera.exe <file_name>
     
-Where <file_name> is the name of a Buttercup source file. You can try with
+Where <file_name> is the name of a Chimera source file. You can try with
 these files:
 
    * prog1.bcup
