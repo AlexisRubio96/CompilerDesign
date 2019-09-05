@@ -38,7 +38,21 @@ namespace Chimera {
               | (?<IntLiteral>      \d+                         )
               | (?<String>          [""].*?[""]{1}([""]{2})*    ) 
               | (?<Semicolon>       ;                           )
-              | (?<Other>           .                           ) # Match any other character
+              | (?<LeftPar>         [(]                         )
+              | (?<RightPar>        [)]                         )
+              | (?<GreaterOrEq>     >=                          )
+              | (?<SmallerOrEq>     <=                          )
+              | (?<NotEqual>        <>                          )
+              | (?<AssignConst>     :=                          )
+              | (?<Greater>         >                           )
+              | (?<Smaller>         <                           )
+              | (?<Equal>           =                           )
+              | (?<Coma>            ,                           )
+              | (?<Plus>            [+]                           )
+              | (?<Minus>           -                           )
+              | (?<Mul>             [*]                           )
+              | (?<Colon>           :                           )
+              | (?<Other>           .                           S)
             ",
             RegexOptions.IgnorePatternWhitespace
                 | RegexOptions.Compiled
@@ -54,6 +68,21 @@ namespace Chimera {
         static readonly IDictionary<string, TokenCategory> symbols =
             new Dictionary<string, TokenCategory>() {
                 {"Semicolon", TokenCategory.SEMICOLON},
+                {"RightPar", TokenCategory.RIGHT_PAR},
+                {"LeftPar", TokenCategory.LEFT_PAR},
+                {"GreaterOrEq", TokenCategory.GREATER_EQ},
+                {"SmallerOrEq", TokenCategory.SMALLER_EQ},
+                {"AssignConst", TokenCategory.ASSIGN_CONST},
+                {"NotEqual", TokenCategory.NOT_EQUAL},
+                {"Greater", TokenCategory.GREATER},
+                {"Smaller", TokenCategory.SMALLER},
+                {"Coma", TokenCategory.COMA},
+                {"Colon", TokenCategory.COLON},
+                {"Plus", TokenCategory.PLUS},
+                {"Mul", TokenCategory.MUL},
+                {"Equal", TokenCategory.EQUAL},
+                {"Minus", TokenCategory.MINUS}
+                
             };
 
         public Scanner(string input) {
@@ -105,7 +134,7 @@ namespace Chimera {
                 }
                 else if (m.Groups["String"].Success)
                 {
-                    yield return newTok(m, TokenCategory.INT_LITERAL);
+                    yield return newTok(m, TokenCategory.STRING);
                 }
                 else if (m.Groups["Other"].Success)
                 {

@@ -27,8 +27,22 @@ namespace Chimera {
         IF,
         INT_LITERAL,
         PROGRAM,
+        RIGHT_PAR,
+        LEFT_PAR,
+        GREATER_EQ,
+        SMALLER_EQ,
+        ASSIGN_CONST,
+        NOT_EQUAL,
         SEMICOLON,
+        GREATER,
+        SMALLER,
         STRING,
+        EQUAL,
+        COMA,
+        COLON,
+        PLUS,
+        MINUS,
+        MUL,
         ILLEGAL_CHAR
     }
 }
