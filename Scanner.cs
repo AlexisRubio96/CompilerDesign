@@ -37,9 +37,12 @@ namespace Chimera {
               | (?<Identifier>      [a-zA-Z](\w|_)*             )
               | (?<IntLiteral>      \d+                         )
               | (?<String>          [""].*?[""]{1}([""]{2})*    ) 
-              | (?<Semicolon>       ;                           )
               | (?<LeftPar>         [(]                         )
               | (?<RightPar>        [)]                         )
+              | (?<LeftSqrBrack>    [[]                         )
+              | (?<RightSqrBrack>   []]                         )
+              | (?<LeftBraces>      [{]                         )
+              | (?<RightBraces>     [}]                         )
               | (?<GreaterOrEq>     >=                          )
               | (?<SmallerOrEq>     <=                          )
               | (?<NotEqual>        <>                          )
@@ -48,11 +51,12 @@ namespace Chimera {
               | (?<Smaller>         <                           )
               | (?<Equal>           =                           )
               | (?<Coma>            ,                           )
-              | (?<Plus>            [+]                           )
+              | (?<Plus>            [+]                         )
               | (?<Minus>           -                           )
-              | (?<Mul>             [*]                           )
+              | (?<Mul>             [*]                         )
+              | (?<Semicolon>       ;                           )
               | (?<Colon>           :                           )
-              | (?<Other>           .                           S)
+              | (?<Other>           .                           )
             ",
             RegexOptions.IgnorePatternWhitespace
                 | RegexOptions.Compiled
@@ -67,22 +71,25 @@ namespace Chimera {
 
         static readonly IDictionary<string, TokenCategory> symbols =
             new Dictionary<string, TokenCategory>() {
-                {"Semicolon", TokenCategory.SEMICOLON},
-                {"RightPar", TokenCategory.RIGHT_PAR},
-                {"LeftPar", TokenCategory.LEFT_PAR},
-                {"GreaterOrEq", TokenCategory.GREATER_EQ},
-                {"SmallerOrEq", TokenCategory.SMALLER_EQ},
                 {"AssignConst", TokenCategory.ASSIGN_CONST},
-                {"NotEqual", TokenCategory.NOT_EQUAL},
-                {"Greater", TokenCategory.GREATER},
-                {"Smaller", TokenCategory.SMALLER},
-                {"Coma", TokenCategory.COMA},
                 {"Colon", TokenCategory.COLON},
-                {"Plus", TokenCategory.PLUS},
-                {"Mul", TokenCategory.MUL},
+                {"Coma", TokenCategory.COMA},
                 {"Equal", TokenCategory.EQUAL},
-                {"Minus", TokenCategory.MINUS}
-                
+                {"Greater", TokenCategory.GREATER},
+                {"GreaterOrEq", TokenCategory.GREATER_EQ},
+                {"LeftBraces", TokenCategory.LEFT_BRACES},
+                {"LeftPar", TokenCategory.LEFT_PAR},
+                {"LeftSqrBrack", TokenCategory.LEFT_SQR_BRACK},
+                {"Minus", TokenCategory.MINUS},
+                {"Mul", TokenCategory.MUL},
+                {"NotEqual", TokenCategory.NOT_EQUAL},
+                {"Plus", TokenCategory.PLUS},
+                {"RightBraces", TokenCategory.RIGHT_BRACES},
+                {"RightPar", TokenCategory.RIGHT_PAR},
+                {"RightSqrBrack", TokenCategory.RIGHT_SQR_BRACK},
+                {"Semicolon", TokenCategory.SEMICOLON},
+                {"Smaller", TokenCategory.SMALLER},
+                {"SmallerOrEq", TokenCategory.SMALLER_EQ},
             };
 
         public Scanner(string input) {
