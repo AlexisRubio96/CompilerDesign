@@ -36,7 +36,7 @@ namespace Chimera {
               | (?<BlockComment>    [/][*](.|\n)*?[*][/]        )
               | (?<Identifier>      [a-zA-Z](\w|_)*             )
               | (?<IntLiteral>      \d+                         )
-              | (?<String>          [""](.*?[""{2}]*.*?)*[""]   ) 
+              | (?<String>          ""((""{2})*|[^""]*)*""      )
               | (?<LeftPar>         [(]                         )
               | (?<RightPar>        [)]                         )
               | (?<LeftSqrBrack>    [[]                         )
