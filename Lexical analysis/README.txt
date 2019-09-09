@@ -20,4 +20,9 @@ To run, type:
 Where <file_name> is the name of a Chimera source file. You can try with
 these files:
 
-   * hello.chimera
+   * Tests/hello.chimera
+   * Tests/palindrome.chimera
+   * Tests/variables.chimera
+   * Tests/binary.chimera
+   * Tests/factorial.chimera
+   * Tests/lists.chimera

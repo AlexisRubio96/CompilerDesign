@@ -14,4 +14,4 @@ program                     // Second comment
     /**/
     WrStr("!");//        
 end;
-/*Last comment*/                        
+/*Last comment*/   

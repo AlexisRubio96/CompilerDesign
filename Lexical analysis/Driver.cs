@@ -1,4 +1,4 @@
-/*
+﻿/*
   Chimera compiler - Program driver.
   Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
   Jorge Alexis Rubio 

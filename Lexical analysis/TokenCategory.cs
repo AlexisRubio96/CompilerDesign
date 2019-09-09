@@ -1,8 +1,7 @@
-/*
+﻿/*
   Chimera compiler - Token categories for the scanner.
   Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
   Jorge Alexis Rubio 
-
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
@@ -20,34 +19,51 @@
 namespace Chimera {
 
     enum TokenCategory {
-        AND,
-        ASSIGN_CONST,
-        COLON,
-        COMA,
-        END,
         EOF,
-        EQUAL,
-        GREATER,
-        GREATER_EQ,
         IDENTIFIER,
-        IF,
-        ILLEGAL_CHAR,
         INT_LITERAL,
-        LEFT_BRACES,
+        RIGHT_PAR,
         LEFT_PAR,
-        LEFT_SQR_BRACK,
+        GREATER_EQ,
+        SMALLER_EQ,
+        ASSIGN_CONST,
+        NOT_EQUAL,
+        SEMICOLON,
+        GREATER,
+        SMALLER,
+        EQUAL,
+        COMA,
+        COLON,
+        PLUS,
         MINUS,
         MUL,
-        NOT_EQUAL,
-        PLUS,
+        ILLEGAL_CHAR,
+        VAR,
         PROGRAM,
-        RIGHT_BRACES,
-        RIGHT_PAR,
-        RIGHT_SQR_BRACK,
-        SEMICOLON,
-        SMALLER,
-        SMALLER_EQ,
+        END,
+        INTEGER,
         STRING,
+        BOOLEAN,
+        LIST,
+        OF,
+        PROCEDURE,
+        CONST,
+        BEGIN,
+        IF,
+        ELSEIF,
+        THEN,
+        ELSE,
+        LOOP,
+        FOR,
+        IN,
+        DO,
+        RETURN,
+        AND,
+        XOR,
+        OR,
+        DIV,
+        REM,
+        NOT
     }
 }
 

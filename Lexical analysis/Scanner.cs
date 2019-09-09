@@ -1,4 +1,4 @@
-/*
+﻿/*
   Chimera compiler - This class performs the lexical analysis.
   Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
   Jorge Alexis Rubio  
@@ -37,12 +37,9 @@ namespace Chimera {
               | (?<Identifier>      [a-zA-Z](\w|_)*             )
               | (?<IntLiteral>      \d+                         )
               | (?<String>          [""].*?[""]{1}([""]{2})*    ) 
+              | (?<Semicolon>       ;                           )
               | (?<LeftPar>         [(]                         )
               | (?<RightPar>        [)]                         )
-              | (?<LeftSqrBrack>    [[]                         )
-              | (?<RightSqrBrack>   []]                         )
-              | (?<LeftBraces>      [{]                         )
-              | (?<RightBraces>     [}]                         )
               | (?<GreaterOrEq>     >=                          )
               | (?<SmallerOrEq>     <=                          )
               | (?<NotEqual>        <>                          )
@@ -51,12 +48,11 @@ namespace Chimera {
               | (?<Smaller>         <                           )
               | (?<Equal>           =                           )
               | (?<Coma>            ,                           )
-              | (?<Plus>            [+]                         )
+              | (?<Plus>            [+]                           )
               | (?<Minus>           -                           )
-              | (?<Mul>             [*]                         )
-              | (?<Semicolon>       ;                           )
+              | (?<Mul>             [*]                           )
               | (?<Colon>           :                           )
-              | (?<Other>           .                           )
+              | (?<Other>           .                           S)
             ",
             RegexOptions.IgnorePatternWhitespace
                 | RegexOptions.Compiled
@@ -65,31 +61,52 @@ namespace Chimera {
        
         static readonly IDictionary<string, TokenCategory> keywords =
             new Dictionary<string, TokenCategory>() {
+                {"const", TokenCategory.CONST},
+                {"var", TokenCategory.VAR},
                 {"program", TokenCategory.PROGRAM},
                 {"end", TokenCategory.END},
+                {"integer", TokenCategory.INTEGER},
+                {"string", TokenCategory.STRING},
+                {"boolean", TokenCategory.BOOLEAN},
+                {"list", TokenCategory.LIST},
+                {"of", TokenCategory.OF},
+                {"procedure", TokenCategory.PROCEDURE},
+                {"begin", TokenCategory.BEGIN},
+                {"if", TokenCategory.IF},
+                {"elseif", TokenCategory.ELSEIF},
+                {"then", TokenCategory.THEN},
+                {"else", TokenCategory.ELSE},
+                {"loop", TokenCategory.LOOP},
+                {"for", TokenCategory.FOR},
+                {"in", TokenCategory.IN},
+                {"do", TokenCategory.DO},
+                {"return", TokenCategory.RETURN},
+                {"and", TokenCategory.AND},
+                {"or", TokenCategory.OR},
+                {"XOR", TokenCategory.XOR},
+                {"div", TokenCategory.DIV},
+                {"rem", TokenCategory.REM},
+                {"not", TokenCategory.NOT}
             };
 
         static readonly IDictionary<string, TokenCategory> symbols =
             new Dictionary<string, TokenCategory>() {
-                {"AssignConst", TokenCategory.ASSIGN_CONST},
-                {"Colon", TokenCategory.COLON},
-                {"Coma", TokenCategory.COMA},
-                {"Equal", TokenCategory.EQUAL},
-                {"Greater", TokenCategory.GREATER},
-                {"GreaterOrEq", TokenCategory.GREATER_EQ},
-                {"LeftBraces", TokenCategory.LEFT_BRACES},
-                {"LeftPar", TokenCategory.LEFT_PAR},
-                {"LeftSqrBrack", TokenCategory.LEFT_SQR_BRACK},
-                {"Minus", TokenCategory.MINUS},
-                {"Mul", TokenCategory.MUL},
-                {"NotEqual", TokenCategory.NOT_EQUAL},
-                {"Plus", TokenCategory.PLUS},
-                {"RightBraces", TokenCategory.RIGHT_BRACES},
-                {"RightPar", TokenCategory.RIGHT_PAR},
-                {"RightSqrBrack", TokenCategory.RIGHT_SQR_BRACK},
                 {"Semicolon", TokenCategory.SEMICOLON},
-                {"Smaller", TokenCategory.SMALLER},
+                {"RightPar", TokenCategory.RIGHT_PAR},
+                {"LeftPar", TokenCategory.LEFT_PAR},
+                {"GreaterOrEq", TokenCategory.GREATER_EQ},
                 {"SmallerOrEq", TokenCategory.SMALLER_EQ},
+                {"AssignConst", TokenCategory.ASSIGN_CONST},
+                {"NotEqual", TokenCategory.NOT_EQUAL},
+                {"Greater", TokenCategory.GREATER},
+                {"Smaller", TokenCategory.SMALLER},
+                {"Coma", TokenCategory.COMA},
+                {"Colon", TokenCategory.COLON},
+                {"Plus", TokenCategory.PLUS},
+                {"Mul", TokenCategory.MUL},
+                {"Equal", TokenCategory.EQUAL},
+                {"Minus", TokenCategory.MINUS}
+                
             };
 
         public Scanner(string input) {
@@ -105,6 +122,7 @@ namespace Chimera {
                 new Token(m.Value, tc, row, m.Index - columnStart + 1);
 
             foreach (Match m in regex.Matches(input)) {
+                //Console.WriteLine("Line: " + m);5
                 if (m.Groups["Newline"].Success)
                 {
                     row++;

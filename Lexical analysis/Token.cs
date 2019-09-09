@@ -1,4 +1,4 @@
-/*
+﻿/*
   Chimera compiler - Token class for the scanner.
   Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
   Jorge Alexis Rubio 
@@ -63,4 +63,3 @@ namespace Chimera {
         }
     }
 }
-
