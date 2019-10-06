@@ -23,6 +23,23 @@ namespace Chimera
                 TokenCategory.EXIT
             };
 
+        private static readonly ISet<TokenCategory> firstOfLiteral =
+            new HashSet<TokenCategory>() {
+                TokenCategory.INT_LITERAL,
+                TokenCategory.STR_LITERAL,
+                TokenCategory.TRUE,
+                TokenCategory.FALSE,
+                TokenCategory.LEFT_BRACES
+            };
+
+        private static readonly ISet<TokenCategory> simpleLiterals =
+            new HashSet<TokenCategory>() {
+                TokenCategory.INT_LITERAL,
+                TokenCategory.STR_LITERAL,
+                TokenCategory.TRUE,
+                TokenCategory.FALSE
+            };
+
         private IEnumerator<Token> tokenStream;
 
         public Parser(IEnumerator<Token> tokenStream)
@@ -54,9 +71,10 @@ namespace Chimera
          * LL(1) Grammar:
          *      PROGRAM ::= ("const" CONST_DECL+)? ("var" VAR_DECL+)? PROC_DECL* "program" STATEMENT* "end" ";"
          *      CONST_DECL ::= IDENTIFIER ":=" LITERAL ";"    
-         * 
-         * 
-         * 
+         *      VAR_DECL ::= IDENTIFIER ("," IDENTIFIER)* ":" TYPE ";"
+         *      LITERAL ::= SIMPLE_LITERAL | LIST
+         *      SIMPLE_LITERAL ::= INTEGER | STRING | TRUE | FALSE
+         *      TYPE ::= SIMPLE_TYPE | LIST_TYPE
          */
 
         public void Program()
@@ -106,6 +124,65 @@ namespace Chimera
 
         public void VariableDeclaration()
         {
+            Expect(TokenCategory.IDENTIFIER);
+
+            while (CurrentToken == TokenCategory.COMA)
+            {
+                Expect(TokenCategory.COMA);
+                Expect(TokenCategory.IDENTIFIER);
+            }
+
+            Expect(TokenCategory.COLON);
+            Type();
+            Expect(TokenCategory.SEMICOLON);
+        }
+
+        public void Literal()
+        {
+            if (firstOfLiteral.Contains(CurrentToken))
+            {
+                if (CurrentToken == TokenCategory.LEFT_BRACES)
+                {
+                    Lst();
+                }
+                else
+                {
+                    SimpleLiteral();
+                }
+            }
+            else
+            {
+                throw new SyntaxError(firstOfLiteral, tokenStream.Current);
+            }
+        }
+
+        public void SimpleLiteral()
+        {
+            switch (CurrentToken)
+            { 
+                case TokenCategory.INT_LITERAL:
+                    Expect(TokenCategory.INT_LITERAL);
+                    break;
+
+                case TokenCategory.STRING:
+                    Expect(TokenCategory.STR_LITERAL);
+                    break;
+
+                case TokenCategory.TRUE:
+                    Expect(TokenCategory.TRUE);
+                    break;
+
+                case TokenCategory.FALSE:
+                    Expect(TokenCategory.FALSE);
+                    break;
+
+                default:
+                    throw new SyntaxError(simpleLiterals, tokenStream.Current);
+            }
+        }
+
+        public void Type()
+        {
             return;
         }
 
@@ -119,10 +196,12 @@ namespace Chimera
             return;
         }
 
-        public void Literal()
+        public void Lst()
         {
             return;
         }
+
+
 
     }
 }

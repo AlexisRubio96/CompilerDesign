@@ -162,7 +162,7 @@ namespace Chimera
                 else if (m.Groups["String"].Success)
                 {
                     yield return new Token(m.Value.Substring(1, m.Value.Length - 2).Replace("\"\"", "\""),
-                        TokenCategory.STRING, row, m.Index - columnStart + 1);
+                        TokenCategory.STR_LITERAL, row, m.Index - columnStart + 1);
                 }
                 else if (m.Groups["Other"].Success)
                 {

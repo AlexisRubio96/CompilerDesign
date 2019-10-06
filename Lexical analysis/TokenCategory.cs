@@ -57,6 +57,7 @@ namespace Chimera
         SMALLER,
         SMALLER_EQ,
         STRING,
+        STR_LITERAL,
         THEN,
         TRUE,
         VAR,
