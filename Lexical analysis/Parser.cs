@@ -92,7 +92,8 @@ namespace Chimera
          *      TYPE ::= SIMPLE_TYPE | LIST_TYPE
          *      SIMPLE_TYPE ::= "integer" | "string" | "boolean"
          *      LIST_TYPE ::= "list" "of" SIMPLE_TYPE
-         *      LIST ::= "{" (SIMPLE_LITERAL ("," SIMPLE_LITERAL )*)? "}"        
+         *      LIST ::= "{" (SIMPLE_LITERAL ("," SIMPLE_LITERAL )*)? "}"
+         *      PROC_DECL ::= "procedure" IDENTIFIER "(" PARAM_DECL* ")" (":" TYPE)? ";" ("const" CONST_DECL+)? ("var" VAR_DECL+)? "begin" STATEMENT* "end" ";"
          */
 
         public void Program()
@@ -266,7 +267,57 @@ namespace Chimera
 
         public void ProcedureDeclaration()
         {
-            return;
+            Expect(TokenCategory.PROCEDURE);
+            Expect(TokenCategory.IDENTIFIER);
+            Expect(TokenCategory.LEFT_PAR);
+
+            while (CurrentToken == TokenCategory.IDENTIFIER)
+            {
+                ParameterDeclaration();
+            }
+
+            Expect(TokenCategory.RIGHT_PAR);
+
+            if (CurrentToken == TokenCategory.COLON)
+            {
+                Expect(TokenCategory.COLON);
+                Type();
+            }
+
+            Expect(TokenCategory.SEMICOLON);
+
+            if (CurrentToken == TokenCategory.CONST)
+            {
+                Expect(TokenCategory.CONST);
+                do
+                {
+                    ConstantDeclaration();
+                } while (CurrentToken == TokenCategory.IDENTIFIER);
+            }
+
+            if (CurrentToken == TokenCategory.VAR)
+            {
+                Expect(TokenCategory.VAR);
+                do
+                {
+                    VariableDeclaration();
+                } while (CurrentToken == TokenCategory.IDENTIFIER);
+            }
+
+            Expect(TokenCategory.BEGIN);
+
+            while (firstOfStatement.Contains(CurrentToken))
+            {
+                Statement();
+            }
+
+            Expect(TokenCategory.END);
+            Expect(TokenCategory.SEMICOLON);
+        }
+
+        public void ParameterDeclaration()
+        {
+
         }
 
         public void Statement()
