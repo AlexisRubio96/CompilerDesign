@@ -40,6 +40,21 @@ namespace Chimera
                 TokenCategory.FALSE
             };
 
+        private static readonly ISet<TokenCategory> firstOfTypes =
+            new HashSet<TokenCategory>() {
+                TokenCategory.INTEGER,
+                TokenCategory.STRING,
+                TokenCategory.BOOLEAN,
+                TokenCategory.LIST
+            };
+
+        private static readonly ISet<TokenCategory> simpleTypes =
+            new HashSet<TokenCategory>() {
+                TokenCategory.INTEGER,
+                TokenCategory.STRING,
+                TokenCategory.BOOLEAN
+            };
+
         private IEnumerator<Token> tokenStream;
 
         public Parser(IEnumerator<Token> tokenStream)
@@ -73,8 +88,11 @@ namespace Chimera
          *      CONST_DECL ::= IDENTIFIER ":=" LITERAL ";"    
          *      VAR_DECL ::= IDENTIFIER ("," IDENTIFIER)* ":" TYPE ";"
          *      LITERAL ::= SIMPLE_LITERAL | LIST
-         *      SIMPLE_LITERAL ::= INTEGER | STRING | TRUE | FALSE
+         *      SIMPLE_LITERAL ::= INTEGER_LITERAL | STRING_LITERAL | TRUE | FALSE
          *      TYPE ::= SIMPLE_TYPE | LIST_TYPE
+         *      SIMPLE_TYPE ::= "integer" | "string" | "boolean"
+         *      LIST_TYPE ::= "list" "of" SIMPLE_TYPE
+         *      LIST ::= "{" (SIMPLE_LITERAL ("," SIMPLE_LITERAL )*)? "}"        
          */
 
         public void Program()
@@ -164,7 +182,7 @@ namespace Chimera
                     Expect(TokenCategory.INT_LITERAL);
                     break;
 
-                case TokenCategory.STRING:
+                case TokenCategory.STR_LITERAL:
                     Expect(TokenCategory.STR_LITERAL);
                     break;
 
@@ -183,7 +201,67 @@ namespace Chimera
 
         public void Type()
         {
-            return;
+            if (firstOfTypes.Contains(CurrentToken))
+            {
+                if (CurrentToken == TokenCategory.LIST)
+                {
+                    ListType();
+                }
+                else
+                {
+                    SimpleType();
+                }
+            }
+            else
+            {
+                throw new SyntaxError(firstOfTypes, tokenStream.Current);
+            }
+        }
+
+        public void SimpleType()
+        {
+            switch (CurrentToken)
+            {
+                case TokenCategory.INTEGER:
+                    Expect(TokenCategory.INTEGER);
+                    break;
+
+                case TokenCategory.STRING:
+                    Expect(TokenCategory.STRING);
+                    break;
+
+                case TokenCategory.BOOLEAN:
+                    Expect(TokenCategory.BOOLEAN);
+                    break;
+
+                default:
+                    throw new SyntaxError(simpleTypes, tokenStream.Current);
+            }
+        }
+
+        public void ListType()
+        {
+            Expect(TokenCategory.LIST);
+            Expect(TokenCategory.OF);
+            SimpleType();
+        }
+
+        public void Lst()
+        {
+            Expect(TokenCategory.LEFT_BRACES);
+
+            if (simpleLiterals.Contains(CurrentToken))
+            { 
+                SimpleLiteral();
+
+                while (CurrentToken == TokenCategory.COMA)
+                {
+                    Expect(TokenCategory.COMA);
+                    SimpleLiteral();
+                }
+            }
+
+            Expect(TokenCategory.RIGHT_BRACES);
         }
 
         public void ProcedureDeclaration()
@@ -195,13 +273,6 @@ namespace Chimera
         {
             return;
         }
-
-        public void Lst()
-        {
-            return;
-        }
-
-
 
     }
 }
