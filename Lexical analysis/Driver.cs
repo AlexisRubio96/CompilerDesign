@@ -1,39 +1,30 @@
 ﻿/*
-  Chimera compiler - Program driver.
-  Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
-  Jorge Alexis Rubio 
-  
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * A01373670 - Rodrigo Garcia Lopez
+ * A01372074 - Jorge Alexis Rubio Sumano
+ * A01371084 - Valentin Ochoa Lopez
 */
 
 using System;
 using System.IO;
 using System.Text;
 
-namespace Chimera {
+namespace Chimera
+{
 
-    public class Driver {
+    public class Driver
+    {
 
-        const string VERSION = "0.1";
+        const string VERSION = "0.2";
 
         //-----------------------------------------------------------
         static readonly string[] ReleaseIncludes = {
-            "Lexical analysis"
+            "Lexical analysis",
+            "Syntactic analysis"
         };
 
         //-----------------------------------------------------------
-        void PrintAppHeader() {
+        void PrintAppHeader()
+        {
             Console.WriteLine("Chimera compiler, version " + VERSION);
             Console.WriteLine(
                 "Copyright \u00A9 2019 by V. Ochoa, R. García & J.A. Rubio.");
@@ -45,31 +36,37 @@ namespace Chimera {
         }
 
         //-----------------------------------------------------------
-        void PrintReleaseIncludes() {
-            Console.WriteLine("Included in this release:");            
-            foreach (var phase in ReleaseIncludes) {
+        void PrintReleaseIncludes()
+        {
+            Console.WriteLine("Included in this release:");
+            foreach (var phase in ReleaseIncludes)
+            {
                 Console.WriteLine("   * " + phase);
             }
         }
 
         //-----------------------------------------------------------
-        void Run(string[] args) {
+        void Run(string[] args)
+        {
 
             PrintAppHeader();
             Console.WriteLine();
             PrintReleaseIncludes();
             Console.WriteLine();
 
-            if (args.Length != 1) {
+            if (args.Length != 1)
+            {
                 Console.Error.WriteLine(
                     "Please specify the name of the input file.");
                 Environment.Exit(1);
             }
 
-            try {            
-                var inputPath = args[0];                
+            try
+            {
+                var inputPath = args[0];
                 var input = File.ReadAllText(inputPath);
-                
+
+                /* Lexical analysis * /
                 Console.WriteLine(String.Format(
                     "===== Tokens from: \"{0}\" =====", inputPath)
                 );
@@ -79,15 +76,29 @@ namespace Chimera {
                                                     count++, tok)
                     );
                 }
-                
-            } catch (FileNotFoundException e) {
+
+                /* Lexical + syntactic analysis*/
+                var parser = new Parser(new Scanner(input).Start().GetEnumerator());
+                parser.Program();
+                Console.WriteLine("Syntax OK.");
+
+            }
+            catch (FileNotFoundException e)
+            {
                 Console.Error.WriteLine(e.Message);
                 Environment.Exit(1);
-            }                
+
+            }
+            catch (SyntaxError e)
+            {
+                Console.Error.WriteLine(e.Message);
+                Environment.Exit(2);
+            }
         }
 
         //-----------------------------------------------------------
-        public static void Main(string[] args) {
+        public static void Main(string[] args)
+        {
             new Driver().Run(args);
         }
     }

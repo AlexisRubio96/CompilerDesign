@@ -1,20 +1,7 @@
 ﻿/*
-  Chimera compiler - This class performs the lexical analysis.
-  Copyright @2019 by Valentín Ochoa López, Rodrigo García López & 
-  Jorge Alexis Rubio  
-  
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * A01373670 - Rodrigo Garcia Lopez
+ * A01372074 - Jorge Alexis Rubio Sumano
+ * A01371084 - Valentin Ochoa Lopez
 */
 
 using System;
@@ -22,9 +9,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Chimera {
+namespace Chimera
+{
 
-    class Scanner {
+    class Scanner
+    {
 
         readonly string input;
 
@@ -119,11 +108,13 @@ namespace Chimera {
                 {"SmallerOrEq", TokenCategory.SMALLER_EQ},
             };
 
-        public Scanner(string input) {
+        public Scanner(string input)
+        {
             this.input = input;
         }
 
-        public IEnumerable<Token> Start() {
+        public IEnumerable<Token> Start()
+        {
 
             var row = 1;
             var columnStart = 0;
@@ -131,7 +122,8 @@ namespace Chimera {
             Func<Match, TokenCategory, Token> newTok = (m, tc) =>
                 new Token(m.Value, tc, row, m.Index - columnStart + 1);
 
-            foreach (Match m in regex.Matches(input)) {
+            foreach (Match m in regex.Matches(input))
+            {
                 //Console.WriteLine("Line: " + m);5
                 if (m.Groups["Newline"].Success)
                 {
@@ -169,7 +161,7 @@ namespace Chimera {
                 }
                 else if (m.Groups["String"].Success)
                 {
-                    yield return new Token(m.Value.Substring(1, m.Value.Length- 2).Replace("\"\"", "\""),
+                    yield return new Token(m.Value.Substring(1, m.Value.Length - 2).Replace("\"\"", "\""),
                         TokenCategory.STRING, row, m.Index - columnStart + 1);
                 }
                 else if (m.Groups["Other"].Success)
@@ -177,12 +169,12 @@ namespace Chimera {
                     // Found an illegal character.
                     yield return newTok(m, TokenCategory.ILLEGAL_CHAR);
                 }
-                else 
+                else
                 {
                     // Match must be one of the symbols.
-                    foreach (var name in symbols.Keys) 
+                    foreach (var name in symbols.Keys)
                     {
-                        if (m.Groups[name].Success) 
+                        if (m.Groups[name].Success)
                         {
                             yield return newTok(m, symbols[name]);
                             break;
@@ -191,9 +183,9 @@ namespace Chimera {
                 }
             }
 
-            yield return new Token(null, 
-                                   TokenCategory.EOF, 
-                                   row, 
+            yield return new Token(null,
+                                   TokenCategory.EOF,
+                                   row,
                                    input.Length - columnStart + 1);
         }
     }
