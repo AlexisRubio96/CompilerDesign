@@ -21,12 +21,12 @@ namespace Chimera
             this.tokenStream.MoveNext();
         }
 
-        public TokenCategory CurrentToken
+        private TokenCategory CurrentToken
         {
             get { return tokenStream.Current.Category; }
         }
 
-        public Token Expect(TokenCategory category)
+        private Token Expect(TokenCategory category)
         {
             if (CurrentToken == category)
             {
@@ -39,6 +39,15 @@ namespace Chimera
                 throw new SyntaxError(category, tokenStream.Current);
             }
         }
+
+        /* 
+         * LL(1) Grammar:
+         *      PROGRAM ::= ("const" CONST_DECL+)? ("var" VAR_DECL+)? PROC_DECL* "program" STATEMENT* "end" ";"
+         *         
+         * 
+         * 
+         * 
+         */
 
         public void Program()
         {
