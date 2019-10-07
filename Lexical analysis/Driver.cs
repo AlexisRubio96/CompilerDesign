@@ -107,14 +107,14 @@ namespace Chimera
             {
                 try
                 {
-                    Console.WriteLine(filename);
                     var input = File.ReadAllText(filename);
                     var parser = new Parser(new Scanner(input).Start().GetEnumerator());
                     parser.Program();
-                    Console.WriteLine("Syntax OK.");
+                    Console.WriteLine("> " + filename + " PASSED");
                 }
                 catch (SyntaxError e)
                 {
+                    Console.WriteLine("> " + filename + " FAILED");
                     Console.Error.WriteLine(e.Message);
                 }
             }
