@@ -48,7 +48,6 @@ namespace Chimera
         //-----------------------------------------------------------
         void Run(string[] args)
         {
-
             PrintAppHeader();
             Console.WriteLine();
             PrintReleaseIncludes();
@@ -97,9 +96,36 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
+        void Test()
+        {
+            PrintAppHeader();
+            Console.WriteLine();
+            PrintReleaseIncludes();
+            Console.WriteLine();
+
+            foreach (string filename in Directory.EnumerateFiles("Tests2", "*.chimera"))
+            {
+                try
+                {
+                    Console.WriteLine(filename);
+                    var input = File.ReadAllText(filename);
+                    var parser = new Parser(new Scanner(input).Start().GetEnumerator());
+                    parser.Program();
+                    Console.WriteLine("Syntax OK.");
+                }
+                catch (SyntaxError e)
+                {
+                    Console.Error.WriteLine(e.Message);
+                }
+            }
+
+        }
+
+        //-----------------------------------------------------------
         public static void Main(string[] args)
         {
-            new Driver().Run(args);
+            //new Driver().Run(args);
+            new Driver().Test();
         }
     }
 }
