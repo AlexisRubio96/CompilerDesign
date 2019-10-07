@@ -1,6 +1,0 @@
-str0 = ""
-str1 = "this is a string"
-str2 = "this is another ""string"""
-str3 = "this "" is "" another "" string"
-str4 = "this """""""" string"
-str5 = {"one("")", "two("""")", "three("""""")"}

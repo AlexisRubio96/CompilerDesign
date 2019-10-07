@@ -3,8 +3,6 @@
  * (C) 2019 Ariel Ortiz, ITESM CEM
  */
 
-//Prueba
-
 program                     // The start of the program.
     WrStr("Hello, World!"); // A simple message.
     WrLn();                 // Don't forget to write a newline.

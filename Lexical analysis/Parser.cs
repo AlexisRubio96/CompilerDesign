@@ -62,7 +62,8 @@ namespace Chimera
                 TokenCategory.INT_LITERAL,
                 TokenCategory.STR_LITERAL,
                 TokenCategory.TRUE,
-                TokenCategory.FALSE
+                TokenCategory.FALSE,
+                TokenCategory.LEFT_BRACES
             };
 
         private static readonly ISet<TokenCategory> firstOfExpression =
@@ -74,7 +75,8 @@ namespace Chimera
                 TokenCategory.INT_LITERAL,
                 TokenCategory.STR_LITERAL,
                 TokenCategory.TRUE,
-                TokenCategory.FALSE
+                TokenCategory.FALSE,
+                TokenCategory.LEFT_BRACES
             };
 
         private static readonly ISet<TokenCategory> firstOfUnaryExpression = firstOfExpression;
@@ -554,7 +556,7 @@ namespace Chimera
         {
             Expect(TokenCategory.RETURN);
 
-            if (firstOfStatement.Contains(CurrentToken))
+            if (firstOfExpression.Contains(CurrentToken))
             {
                 Expression();
             }

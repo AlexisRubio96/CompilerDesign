@@ -103,7 +103,7 @@ namespace Chimera
             PrintReleaseIncludes();
             Console.WriteLine();
 
-            foreach (string filename in Directory.EnumerateFiles("Tests2", "*.chimera"))
+            foreach (string filename in Directory.EnumerateFiles("Tests", "*.chimera"))
             {
                 try
                 {
