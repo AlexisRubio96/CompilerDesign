@@ -35,4 +35,10 @@ namespace Chimera
 
     public class IdentifierList : Node { }
 
+    public class ProcedureDeclaration : Node { }
+
+    public class ParameterDeclarationList : Node { }
+
+    public class ParameterDeclaration : Node { }
+
 }

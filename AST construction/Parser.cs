@@ -202,7 +202,7 @@ namespace Chimera
 
             while (CurrentToken == TokenCategory.PROCEDURE)
             {
-                ProcedureDeclaration();
+                result.Add(ProcedureDeclaration());
             }
 
             Expect(TokenCategory.PROGRAM);
@@ -357,43 +357,53 @@ namespace Chimera
             return result;
         }
 
-        public void ProcedureDeclaration()
+        public Node ProcedureDeclaration()
         {
+            var result = new ProcedureDeclaration();
+
             Expect(TokenCategory.PROCEDURE);
-            Expect(TokenCategory.IDENTIFIER);
+            result.AnchorToken = Expect(TokenCategory.IDENTIFIER);
             Expect(TokenCategory.LEFT_PAR);
 
+            var parameterDeclarationList = new ParameterDeclarationList();
             while (CurrentToken == TokenCategory.IDENTIFIER)
             {
-                ParameterDeclaration();
+                parameterDeclarationList.Add(ParameterDeclaration());
             }
+            result.Add(parameterDeclarationList);
 
             Expect(TokenCategory.RIGHT_PAR);
 
             if (CurrentToken == TokenCategory.COLON)
             {
                 Expect(TokenCategory.COLON);
-                Type();
+                result.Add(Type());
             }
 
             Expect(TokenCategory.SEMICOLON);
 
             if (CurrentToken == TokenCategory.CONST)
             {
-                Expect(TokenCategory.CONST);
+                var constantDeclarationList = new ConstantDeclarationList()
+                    { AnchorToken = Expect(TokenCategory.CONST) };
                 do
                 {
-                    ConstantDeclaration();
+                    constantDeclarationList.Add(ConstantDeclaration());
                 } while (CurrentToken == TokenCategory.IDENTIFIER);
+
+                result.Add(constantDeclarationList);
             }
 
             if (CurrentToken == TokenCategory.VAR)
             {
-                Expect(TokenCategory.VAR);
+                var variableDeclarationList = new VariableDeclarationList()
+                    { AnchorToken = Expect(TokenCategory.VAR) };
                 do
                 {
-                    VariableDeclaration();
+                    variableDeclarationList.Add(VariableDeclaration());
                 } while (CurrentToken == TokenCategory.IDENTIFIER);
+
+                result.Add(variableDeclarationList);
             }
 
             Expect(TokenCategory.BEGIN);
@@ -405,21 +415,29 @@ namespace Chimera
 
             Expect(TokenCategory.END);
             Expect(TokenCategory.SEMICOLON);
+
+            return result;
         }
 
-        public void ParameterDeclaration()
+        public Node ParameterDeclaration()
         {
-            Expect(TokenCategory.IDENTIFIER);
+            var result = new ParameterDeclaration();
+
+            var identifierList = new IdentifierList()
+                { new Identifier() { AnchorToken = Expect(TokenCategory.IDENTIFIER) } };
+            result.Add(identifierList);
 
            while (CurrentToken == TokenCategory.COMA)
             {
                 Expect(TokenCategory.COMA);
-                Expect(TokenCategory.IDENTIFIER);
+                identifierList.Add(new Identifier() { AnchorToken = Expect(TokenCategory.IDENTIFIER) });
             }
 
             Expect(TokenCategory.COLON);
-            Type();
+            result.Add(Type());
             Expect(TokenCategory.SEMICOLON);
+
+            return result;
         }
 
         public void Statement()

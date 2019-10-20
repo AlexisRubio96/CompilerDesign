@@ -1,0 +1,10 @@
+procedure isEqual
+(a, b: integer;):boolean;
+const epsilon := 3;
+var result:boolean;
+begin
+	result := a - b < 3;
+	return result;
+end;
+program
+end;
