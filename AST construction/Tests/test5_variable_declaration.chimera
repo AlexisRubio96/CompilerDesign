@@ -1,0 +1,5 @@
+var
+	num, count, avg, sum: integer;
+	names: string;
+program
+end;

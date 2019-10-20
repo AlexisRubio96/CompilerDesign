@@ -1,0 +1,5 @@
+var
+	ages: list of integer;
+	wins: list of boolean;
+program
+end;

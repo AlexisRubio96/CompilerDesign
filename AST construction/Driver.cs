@@ -124,8 +124,8 @@ namespace Chimera
         //-----------------------------------------------------------
         public static void Main(string[] args)
         {
-            //new Driver().Run(args);
-            new Driver().Test();
+            new Driver().Run(args);
+            //new Driver().Test();
         }
     }
 }
