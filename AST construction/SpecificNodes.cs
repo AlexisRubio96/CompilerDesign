@@ -41,4 +41,44 @@ namespace Chimera
 
     public class ParameterDeclaration : Node { }
 
+    public class And : Node { }
+
+    public class Xor : Node { }
+
+    public class Or : Node { }
+
+    public class Equal : Node { }
+
+    public class NotEqual : Node { }
+
+    public class Smaller : Node { }
+
+    public class Greater : Node { }
+
+    public class SmallerEq : Node { }
+
+    public class GreaterEq : Node { }
+
+    public class Plus : Node { }
+
+    public class Minus : Node { }
+
+    public class Mul : Node { }
+
+    public class Div : Node { }
+
+    public class Rem : Node { }
+
+    public class Not : Node { }
+
+    public class Negative : Node { }
+
+    public class ListIndexExpression : Node { }
+
+    public class Call : Node { } 
+
+    public class StatementList : Node { }
+
+    public class ReturnStatement : Node { }
+
 }
