@@ -4,7 +4,6 @@
  * A01371084 - Valentin Ochoa Lopez
 */
 
-
 using System;
 using System.Collections.Generic;
 
@@ -173,7 +172,7 @@ namespace Chimera
          *      CALL ::= "(" (EXPR ("," EXPR)*)? ")"
          */
 
-        public void Program()
+        public Node Program()
         {
             if (CurrentToken == TokenCategory.CONST)
             {
@@ -208,6 +207,8 @@ namespace Chimera
             Expect(TokenCategory.END);
             Expect(TokenCategory.SEMICOLON);
             Expect(TokenCategory.EOF);
+
+            return new Program(); 
         }
 
         public void ConstantDeclaration()
