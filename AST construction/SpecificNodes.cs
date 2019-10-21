@@ -81,4 +81,22 @@ namespace Chimera
 
     public class ReturnStatement : Node { }
 
+    public class AssignmentStatement : Node { }
+
+    public class CallStatement : Node { }
+
+    public class IfStatement : Node { }
+
+    public class LoopStatement : Node { }
+
+    public class ForStatement : Node { }
+
+    public class ExitStatement : Node { }
+
+    public class IfClause : Node { }
+
+    public class ElseIfClause : Node { }
+
+    public class ElseClause : Node { }
+
 }
