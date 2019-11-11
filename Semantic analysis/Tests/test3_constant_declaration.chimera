@@ -1,0 +1,6 @@
+const
+	num := 12;
+	bol := false;
+	str := "can""t";
+program
+end;

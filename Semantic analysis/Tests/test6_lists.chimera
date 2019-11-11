@@ -1,0 +1,6 @@
+const
+	numbers := {1,2,3,4};
+	religions := {"catholic"};
+	empty := {};
+program
+end;
