@@ -11,6 +11,12 @@ namespace Chimera
 
     public enum Type
     {
+        BOOLEAN,
+        INTEGER,
+        STRING,
+        LIST_OF_BOOLEAN,
+        LIST_OF_STRING,
+        LIST_OF_INTEGER,
         VOID
     }
 }

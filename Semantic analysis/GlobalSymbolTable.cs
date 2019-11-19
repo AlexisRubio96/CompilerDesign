@@ -11,16 +11,16 @@ using System.Collections.Generic;
 namespace Chimera
 {
 
-    public class SymbolTable : IEnumerable<KeyValuePair<string, Type>>
+    public class GlobalSymbolTable : IEnumerable<KeyValuePair<string, GlobalSymbol>>
     {
 
-        IDictionary<string, Type> data = new SortedDictionary<string, Type>();
+        IDictionary<string, GlobalSymbol> data = new SortedDictionary<string, GlobalSymbol>();
 
         //-----------------------------------------------------------
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("Symbol Table\n");
+            sb.Append("Global Symbol Table\n");
             sb.Append("====================\n");
             foreach (var entry in data)
             {
@@ -33,7 +33,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type this[string key]
+        public GlobalSymbol this[string key]
         {
             get
             {
@@ -52,7 +52,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public IEnumerator<KeyValuePair<string, Type>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, GlobalSymbol>> GetEnumerator()
         {
             return data.GetEnumerator();
         }

@@ -16,6 +16,11 @@ namespace Chimera
 
         IList<Node> children = new List<Node>();
 
+        public Int32 Count()
+        {
+            return children.Count;
+        }
+
         public Node this[int index]
         {
             get
