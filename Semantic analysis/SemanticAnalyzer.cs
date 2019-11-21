@@ -75,11 +75,11 @@ namespace Chimera
                 int i = 0;
                 foreach (var n in node[0])
                     lst[i++] = n.ExtractValue();
-                GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, lst);
+                GSTable[globalSymbolName] = new GlobalSymbol(nodeType, lst);
             }
             else
             {
-                GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, node[0].ExtractValue());
+                GSTable[globalSymbolName] = new GlobalSymbol(nodeType, node[0].ExtractValue());
             }
             
             return Type.VOID;
@@ -103,7 +103,7 @@ namespace Chimera
                 {
                     throw new SemanticError("Duplicated symbol: " + globalSymbolName, n.AnchorToken);
                 }
-                GSTable[globalSymbolName] = new GlobalSymbol(false, declarationType);
+                GSTable[globalSymbolName] = new GlobalSymbol(declarationType);
             }
 
             return Type.VOID;
