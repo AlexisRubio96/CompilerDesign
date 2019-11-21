@@ -1,5 +1,6 @@
 var
 	num, count, avg, sum: integer;
 	names: string;
+	isReal: boolean;
 program
 end;

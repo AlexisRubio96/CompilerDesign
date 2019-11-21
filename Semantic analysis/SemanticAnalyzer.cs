@@ -120,11 +120,71 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
+        public Type Visit(VariableDeclarationList node)
+        {
+            VisitChildren(node);
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(VariableDeclaration node)
+        {
+            Type declarationType = Visit((dynamic)node[1]);
+            foreach (var n in node[0])
+            {
+                var globalSymbolName = n.AnchorToken.Lexeme;
+                if (GSTable.Contains(globalSymbolName))
+                {
+                    throw new SemanticError("Duplicated symbol: " + globalSymbolName, n.AnchorToken);
+                }
+                GSTable[globalSymbolName] = new GlobalSymbol(false, declarationType);
+            }
+
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(ListType node)
+        {
+            var tokcat = node.AnchorToken.Category;
+            if (tokcat == TokenCategory.BOOLEAN)
+            {
+                return Type.LIST_OF_BOOLEAN;
+            }
+            else if (tokcat == TokenCategory.INTEGER)
+            {
+                return Type.LIST_OF_INTEGER;
+            }
+            else
+            {
+                return Type.LIST_OF_STRING;
+            }
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(SimpleType node)
+        {
+            var tokcat = node.AnchorToken.Category;
+            if (tokcat == TokenCategory.BOOLEAN)
+            {
+                return Type.BOOLEAN;
+            }
+            else if (tokcat == TokenCategory.INTEGER)
+            {
+                return Type.INTEGER;
+            }
+            else
+            {
+                return Type.STRING;
+            }
+        }
+
+        //-----------------------------------------------------------
         public Type Visit(Lst node)
         {
             if (node.Count() > 0)
             {
-                Type lstType = Visit((dynamic) node[0]);
+                Type lstType = Visit((dynamic)node[0]);
                 foreach (var n in node)
                 {
                     Type elmType = Visit((dynamic)n);
@@ -185,6 +245,8 @@ namespace Chimera
         {
             return Type.STRING;
         }
+
+
 
         //-----------------------------------------------------------
         private Type Visit(Node node)

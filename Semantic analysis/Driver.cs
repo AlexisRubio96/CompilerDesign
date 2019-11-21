@@ -95,6 +95,7 @@ namespace Chimera
                 var semantic = new SemanticAnalyzer();
                 semantic.Visit((dynamic)program);
 
+                Console.Write(program.ToStringTree());
                 Console.WriteLine("Semantics OK.");
                 Console.WriteLine();
                 Console.WriteLine(semantic.GSTable);
