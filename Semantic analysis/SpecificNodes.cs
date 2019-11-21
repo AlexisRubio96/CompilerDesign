@@ -35,6 +35,8 @@ namespace Chimera
 
     public class IdentifierList : Node { }
 
+    public class ProcedureDeclarationList : Node { }
+
     public class ProcedureDeclaration : Node { }
 
     public class ParameterDeclarationList : Node { }

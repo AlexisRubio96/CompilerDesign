@@ -36,6 +36,27 @@ namespace Chimera
             children.Add(node);
         }
 
+        public dynamic ExtractValue()
+        {
+            if (AnchorToken.Category == TokenCategory.TRUE )
+            {
+                return true;
+            }
+            if (AnchorToken.Category == TokenCategory.FALSE)
+            {
+                return false;
+            }
+            if (AnchorToken.Category == TokenCategory.INT_LITERAL)
+            {
+                return Convert.ToInt32(AnchorToken.Lexeme);
+            }
+            if (AnchorToken.Category == TokenCategory.STR_LITERAL)
+            {
+                return AnchorToken.Lexeme;
+            }
+            throw new FieldAccessException("Expecting one of the followings tokens categories: TRUE, FALSE, INT_LITERAL, STR_LITERAL");
+        }
+
         public IEnumerator<Node> GetEnumerator()
         {
             return children.GetEnumerator();

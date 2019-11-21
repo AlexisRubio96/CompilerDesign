@@ -200,10 +200,17 @@ namespace Chimera
                 result.Add(variableDeclarationList);
             }
 
-            while (CurrentToken == TokenCategory.PROCEDURE)
+            if (CurrentToken == TokenCategory.PROCEDURE)
             {
-                result.Add(ProcedureDeclaration());
-            }
+                var procedureDeclarationList = new ProcedureDeclarationList();
+
+                do
+                {
+                    procedureDeclarationList.Add(ProcedureDeclaration());
+                } while (CurrentToken == TokenCategory.PROCEDURE);
+
+                result.Add(procedureDeclarationList);
+           }
 
             Expect(TokenCategory.PROGRAM);
 

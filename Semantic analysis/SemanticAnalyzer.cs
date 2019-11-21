@@ -54,66 +54,32 @@ namespace Chimera
         {
             var globalSymbolName = node.AnchorToken.Lexeme;
             if (GSTable.Contains(globalSymbolName))
-            {
                 throw new SemanticError("Duplicated symbol: " + globalSymbolName, node[0].AnchorToken);
-            }
 
+            Type nodeType = Visit((dynamic)node[0]);
             if (node[0] is Lst)
             {
                 if (node[0].Count() == 0)
-                {
                     throw new SemanticError("Constant lists cannot be empty: " + globalSymbolName, node.AnchorToken);
-                }
 
-                Type nodeType = Visit((dynamic)node[0]);
+                dynamic lst;
                 if (nodeType == Type.LIST_OF_BOOLEAN)
-                {
-                    Boolean[] lst = new Boolean[node[0].Count()];
-                    int i = 0;
-                    foreach (var n in node[0])
-                    {
-                        lst[i++] = Convert.ToBoolean(n.AnchorToken.Lexeme);
-                    }
-                    GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, lst);
-                }
+                    lst = new Boolean[node[0].Count()];
                 else if (nodeType == Type.LIST_OF_INTEGER)
-                {
-                    Int32[] lst = new Int32[node[0].Count()];
-                    int i = 0;
-                    foreach (var n in node[0])
-                    {
-                        lst[i++] = Convert.ToInt32(n.AnchorToken.Lexeme);
-                    }
-                    GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, lst);
-                }
+                    lst = new Int32[node[0].Count()];
                 else if (nodeType == Type.LIST_OF_STRING)
-                {
-                    String[] lst = new String[node[0].Count()];
-                    int i = 0;
-                    foreach (var n in node[0])
-                    {
-                        lst[i++] = n.AnchorToken.Lexeme;
-                    }
-                    GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, lst);
-                }
+                    lst = new String[node[0].Count()];
+                else
+                    throw new TypeAccessException("Expecting one of the following node types: LIST_OF_BOOLEAN, LIST_OF_INTEGER, LIST_OF_STRING");
 
+                int i = 0;
+                foreach (var n in node[0])
+                    lst[i++] = n.ExtractValue();
+                GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, lst);
             }
             else
             {
-                Type nodeType = Visit((dynamic)node[0]);
-                if (nodeType == Type.BOOLEAN)
-                {
-                    GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, Convert.ToBoolean(node[0].AnchorToken.Lexeme));
-                }
-                else if (nodeType == Type.INTEGER)
-                {
-                    GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, Convert.ToInt32(node[0].AnchorToken.Lexeme));
-                }
-                else if (nodeType == Type.STRING)
-                {
-                    GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, node[0].AnchorToken.Lexeme);
-                }
-         
+                GSTable[globalSymbolName] = new GlobalSymbol(true, nodeType, node[0].ExtractValue());
             }
             
             return Type.VOID;
@@ -142,6 +108,14 @@ namespace Chimera
 
             return Type.VOID;
         }
+
+        //-----------------------------------------------------------
+        public Type Visit(ProcedureDeclarationList node)
+        {
+            VisitChildren(node);
+            return Type.VOID;
+        }
+
 
         //-----------------------------------------------------------
         public Type Visit(ListType node)
