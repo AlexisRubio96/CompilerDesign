@@ -1,4 +1,6 @@
-procedure myproc();
+procedure myproc1();
+begin end;
+procedure myproc2();
 begin end;
 program
 end

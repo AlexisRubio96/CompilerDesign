@@ -95,14 +95,10 @@ namespace Chimera
                 var semantic = new SemanticAnalyzer();
                 semantic.Visit((dynamic)program);
 
+                Console.Write(program.ToStringTree());//
                 Console.WriteLine("Semantics OK.");
                 Console.WriteLine();
-                Console.WriteLine("Symbol Table");
-                Console.WriteLine("============");
-                foreach (var entry in semantic.Table)
-                {
-                    Console.WriteLine(entry);
-                }
+                Console.WriteLine(semantic.GSTable);
 
             }
             catch (FileNotFoundException e)
@@ -114,6 +110,11 @@ namespace Chimera
             {
                 Console.Error.WriteLine(e.Message);
                 Environment.Exit(2);
+            }
+            catch (SemanticError e)
+            {
+                Console.Error.WriteLine(e.Message);
+                Environment.Exit(3);
             }
         }
 

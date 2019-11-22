@@ -1,6 +1,7 @@
 var
 	ages, numbers: list of integer;
 	wins: list of boolean;
+   	countries: list of string;
 	total: integer;
 program
 end;

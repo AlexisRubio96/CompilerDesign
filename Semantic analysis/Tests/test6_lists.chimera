@@ -1,6 +1,6 @@
 const
 	numbers := {1,2,3,4};
-	religions := {"catholic"};
-	empty := {};
+	religions := {"catholic", "budhism"};
+	flips := {true, false};
 program
 end;
