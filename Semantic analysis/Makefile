@@ -17,8 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-chimera.exe: Driver.cs Scanner.cs Token.cs TokenCategory.cs Parser.cs SyntaxError.cs Node.cs SpecificNodes.cs SemanticError.cs SemanticAnalyzer.cs GlobalSymbolTable.cs GlobalSymbol.cs Type.cs       
-	mcs -out:chimera.exe Driver.cs Scanner.cs Token.cs TokenCategory.cs Parser.cs SyntaxError.cs Node.cs SpecificNodes.cs SemanticError.cs SemanticAnalyzer.cs GlobalSymbolTable.cs GlobalSymbol.cs Type.cs
+
+
+chimera.exe: Driver.cs Scanner.cs Token.cs TokenCategory.cs Parser.cs SyntaxError.cs Node.cs SpecificNodes.cs SemanticError.cs SemanticAnalyzer.cs SymbolTable.cs Type.cs GlobalSymbol.cs Table.cs LocalSymbolTable.cs GlobalProcedureTable.cs Clasification.cs GlobalProcedure.cs   GlobalSymbol.cs GlobalProcedure.cs LocalSymbol.cs    
+	mcs -out:chimera.exe Driver.cs Scanner.cs Token.cs TokenCategory.cs Parser.cs SyntaxError.cs Node.cs SpecificNodes.cs SemanticError.cs SemanticAnalyzer.cs SymbolTable.cs Type.cs GlobalSymbol.cs Table.cs LocalSymbolTable.cs GlobalProcedureTable.cs Clasification.cs GlobalProcedure.cs GlobalSymbol.cs GlobalProcedure.cs LocalSymbol.cs 
+
 			
 clean:
 	rm chimera.exe
