@@ -20,7 +20,7 @@ namespace Chimera
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("Global Symbol Table\n");
+            sb.Append("Global Procedure Table\n");
             sb.Append("====================\n");
             foreach (var entry in data)
             {

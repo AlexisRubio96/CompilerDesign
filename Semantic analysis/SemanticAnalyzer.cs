@@ -30,6 +30,13 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
+        public GlobalProcedureTable GPTable
+        {
+            get;
+            private set;
+        }
+
+        //-----------------------------------------------------------
         private Int32 LoopNestingLevel
         {
             get;
@@ -40,6 +47,7 @@ namespace Chimera
         public SemanticAnalyzer()
         {
             GSTable = new GlobalSymbolTable();
+            GPTable = new GlobalProcedureTable();
             LoopNestingLevel = 0;
         }
 

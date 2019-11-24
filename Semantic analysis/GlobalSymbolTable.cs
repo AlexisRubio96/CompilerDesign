@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Chimera
 {
 
-    public class GlobalSymbolTable : IEnumerable<KeyValuePair<string, GlobalSymbol>>
+    public class GlobalSymbolTable : Table, IEnumerable<KeyValuePair<string, GlobalSymbol>>
     {
 
         IDictionary<string, GlobalSymbol> data = new SortedDictionary<string, GlobalSymbol>();

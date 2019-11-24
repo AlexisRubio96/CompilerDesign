@@ -99,6 +99,7 @@ namespace Chimera
                 Console.WriteLine("Semantics OK.");
                 Console.WriteLine();
                 Console.WriteLine(semantic.GSTable);
+                Console.WriteLine(semantic.GPTable);
 
             }
             catch (FileNotFoundException e)

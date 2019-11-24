@@ -16,13 +16,14 @@ namespace Chimera
 
         Boolean IsPredefined;
         Type ReturnType;
-        LocalSymbolTable localSymbols;
+        LocalSymbolTable LocalSymbols;
 
         //-----------------------------------------------------------
         public GlobalProcedure(Boolean IsPredefined, Type ReturnType)
         {
             this.IsPredefined = IsPredefined;
             this.ReturnType = ReturnType;
+            this.LocalSymbols = new LocalSymbolTable();
         }
 
         //-----------------------------------------------------------
@@ -30,12 +31,13 @@ namespace Chimera
         {
             this.IsPredefined = IsPredefined;
             this.ReturnType = Type.VOID;
+            this.LocalSymbols = new LocalSymbolTable();
         }
 
         //-----------------------------------------------------------
         public override string ToString()
         {
-            return "haz global procedure.ToString!!!!";
+            return "IsPredifined=" + IsPredefined + " ReturnType=" + ReturnType + " LocalSymbolTable=" + LocalSymbols ;
         }
     }
 }

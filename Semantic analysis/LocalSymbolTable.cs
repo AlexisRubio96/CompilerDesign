@@ -1,4 +1,3 @@
-//local symbol table
 /*
  * A01373670 - Rodrigo Garcia Lopez
  * A01372074 - Jorge Alexis Rubio Sumano
