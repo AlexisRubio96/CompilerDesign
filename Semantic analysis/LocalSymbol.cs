@@ -40,6 +40,7 @@ namespace Chimera
         {
             this.Kind = Clasification.PARAM;
             this.LocalType = LocalType;
+            this.Position = Position;
             setDefaultValues(LocalType);
         }
 
@@ -66,8 +67,8 @@ namespace Chimera
         public override string ToString()
         {
             if (LocalType == Type.LIST_OF_BOOLEAN || LocalType == Type.LIST_OF_INTEGER || LocalType == Type.LIST_OF_STRING)
-                return "Type=" + LocalType + "Position=" + Position + " Kind=" + Kind + " Value=[" + string.Join(", ", Value) + "]";
-            return "Type=" + LocalType + "Position=" + Position + " Kind=" + Kind + " Value=" + Value;
+                return "Type=" + LocalType + " Position=" + Position + " Kind=" + Kind + " Value=[" + string.Join(", ", Value) + "]";
+            return "Type=" + LocalType + " Position=" + Position + " Kind=" + Kind + " Value=" + Value;
 
         }
     }

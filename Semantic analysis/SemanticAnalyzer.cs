@@ -207,6 +207,35 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
+        public Type Visit(ParameterDeclarationList node, Table table)
+        {
+            int i = 0;
+            foreach (var n in node)
+                Visit((dynamic)n, table, i++);
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(ParameterDeclaration node, Table table, int position)
+        {
+            LocalSymbolTable lstable = table as LocalSymbolTable;
+            if (lstable == null)
+                throw new TypeAccessException("Expecting a LocalSymbolTable");
+
+            Type paramType = Visit((dynamic)node[1], table);
+            foreach (var n in node[0])
+            {
+                var symbolName = n.AnchorToken.Lexeme;
+                if (lstable.Contains(symbolName))
+                    throw new SemanticError("Duplicated symbol: " + symbolName, n.AnchorToken);
+
+                lstable[symbolName] = new LocalSymbol(paramType, position);
+            }
+
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
         public Type Visit(StatementList node, Table table)
         {
             //VisitChildren(node, table);
