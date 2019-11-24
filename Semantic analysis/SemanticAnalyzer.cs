@@ -30,9 +30,17 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
+        private Int32 LoopNestingLevel
+        {
+            get;
+            set;
+        }
+
+        //-----------------------------------------------------------
         public SemanticAnalyzer()
         {
             GSTable = new GlobalSymbolTable();
+            LoopNestingLevel = 0;
         }
 
         //-----------------------------------------------------------
@@ -116,23 +124,36 @@ namespace Chimera
             return Type.VOID;
         }
 
+        //-----------------------------------------------------------
+        public Type Visit(StatementList node)
+        {
+            VisitChildren(node);
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(AssignmentStatement node)
+        {
+            Type leftExpressionType = Visit((dynamic) node[0]);
+            Type rightExpressionType = Visit((dynamic) node[1]);
+            if (leftExpressionType != rightExpressionType)
+                throw new SemanticError("Expecting type " + leftExpressionType + " instead of " + rightExpressionType + " in assignment statement" +
+                	"", node.AnchorToken);
+
+            return Type.VOID;
+        }
 
         //-----------------------------------------------------------
         public Type Visit(ListType node)
         {
             var tokcat = node.AnchorToken.Category;
             if (tokcat == TokenCategory.BOOLEAN)
-            {
                 return Type.LIST_OF_BOOLEAN;
-            }
-            else if (tokcat == TokenCategory.INTEGER)
-            {
+            if (tokcat == TokenCategory.INTEGER)
                 return Type.LIST_OF_INTEGER;
-            }
-            else
-            {
+            if (tokcat == TokenCategory.STRING)
                 return Type.LIST_OF_STRING;
-            }
+            throw new TypeAccessException("Expecting one of the following node types: BOOLEAN, INTEGER, STRING");
         }
 
         //-----------------------------------------------------------
@@ -140,17 +161,12 @@ namespace Chimera
         {
             var tokcat = node.AnchorToken.Category;
             if (tokcat == TokenCategory.BOOLEAN)
-            {
                 return Type.BOOLEAN;
-            }
             else if (tokcat == TokenCategory.INTEGER)
-            {
                 return Type.INTEGER;
-            }
-            else
-            {
+            if (tokcat == TokenCategory.STRING)
                 return Type.STRING;
-            }
+            throw new TypeAccessException("Expecting one of the following node types: BOOLEAN, INTEGER, STRING");
         }
 
         //-----------------------------------------------------------
@@ -163,23 +179,17 @@ namespace Chimera
                 {
                     Type elmType = Visit((dynamic)n);
                     if (elmType != lstType)
-                    {
                         throw new SemanticError("All list elements should be of the same type: ", n.AnchorToken);
-                    }
                 }
 
                 if (lstType == Type.BOOLEAN)
-                {
                     return Type.LIST_OF_BOOLEAN;
-                }
                 else if (lstType == Type.INTEGER)
-                {
                     return Type.LIST_OF_INTEGER;
-                }
                 else if (lstType == Type.STRING)
-                {
                     return Type.LIST_OF_STRING;
-                }
+                else
+                    throw new TypeAccessException("Expecting one of the following node types: BOOLEAN, INTEGER, STRING");
             }
 
             return Type.VOID;
@@ -219,8 +229,6 @@ namespace Chimera
         {
             return Type.STRING;
         }
-
-
 
         //-----------------------------------------------------------
         private Type Visit(Node node)
