@@ -20,7 +20,11 @@ namespace Chimera
         }
         int Position;
         dynamic Value;
-        Clasification Kind;
+        public Clasification Kind
+        {
+            get;
+            private set;
+        }
 
         //-----------------------------------------------------------
         public LocalSymbol(Type LocalType, dynamic Value)

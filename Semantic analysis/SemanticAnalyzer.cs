@@ -251,8 +251,35 @@ namespace Chimera
                 throw new SemanticError("Expecting type " + leftExpressionType + " instead of " + rightExpressionType + " in assignment statement" +
                 	"", node.AnchorToken);
 
+
+            if (node[0] is Identifier)
+            {
+                GlobalSymbolTable gstable = table as GlobalSymbolTable;
+                LocalSymbolTable lstable = table as LocalSymbolTable;
+
+                var symbolName = node[0].AnchorToken.Lexeme;
+                if (table is GlobalSymbolTable)
+                {
+                    if (gstable[symbolName].IsConstant)
+                        throw new SemanticError("Cannot perform assignment to constant " + symbolName, node[0].AnchorToken);
+                }
+                else if (table is LocalSymbolTable)
+                {
+                    if (lstable.Contains(symbolName) && lstable[symbolName].Kind == Clasification.CONST || GSTable.Contains(symbolName) && GSTable[symbolName].IsConstant)
+                        throw new SemanticError("Cannot perform assignment to constant " + symbolName, node[0].AnchorToken);
+                }
+                else
+                {
+                    throw new TypeAccessException("Expecting either a GlobalSymbolTable or a LocalSymboltable");
+                }
+            }
+            else if (node[0] is ListIndexExpression)  { }
+            else { throw new TypeAccessException("Expecting either a Idenetifier or a ListIndexExpression " + node[0]); }
+
             return Type.VOID;
         }
+
+
 
         //-----------------------------------------------------------
         public Type Visit(ListType node, Table table)

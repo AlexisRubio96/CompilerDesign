@@ -1,7 +1,8 @@
-var x: integer;
-    ul: list of integer;
+const ul := {2,1,3};
+var 
+    x: integer;
 program
-	ul[0] := x;
+	ul := ul;
 	min();
 	maximum(0, 1, nums[2]);
 	loop

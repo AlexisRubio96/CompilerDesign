@@ -14,7 +14,11 @@ namespace Chimera
     public class GlobalSymbol
     {
 
-        Boolean IsConstant;
+        public Boolean IsConstant
+        {
+            get;
+            private set;
+        }
         public Type TheType
         {
             get;
