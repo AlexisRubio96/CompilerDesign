@@ -16,7 +16,11 @@ namespace Chimera
 
         Boolean IsPredefined;
         Type ReturnType;
-        LocalSymbolTable LocalSymbols;
+        public LocalSymbolTable LocalSymbols
+        {
+            get;
+            private set;
+        }
 
         //-----------------------------------------------------------
         public GlobalProcedure(Boolean IsPredefined, Type ReturnType)
@@ -37,7 +41,7 @@ namespace Chimera
         //-----------------------------------------------------------
         public override string ToString()
         {
-            return "IsPredifined=" + IsPredefined + " ReturnType=" + ReturnType + " LocalSymbolTable=" + LocalSymbols ;
+            return "IsPredifined=" + IsPredefined + " ReturnType=" + ReturnType + LocalSymbols ;
         }
     }
 }

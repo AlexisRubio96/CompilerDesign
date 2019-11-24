@@ -7,6 +7,4 @@
 namespace Chimera
 {
     public class Table { }
-
-
 }

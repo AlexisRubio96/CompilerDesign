@@ -65,7 +65,9 @@ namespace Chimera
         //-----------------------------------------------------------
         public override string ToString()
         {
-            return "Position=" + Position + " Kind=" + Kind + " Value=" + Value;
+            if (LocalType == Type.LIST_OF_BOOLEAN || LocalType == Type.LIST_OF_INTEGER || LocalType == Type.LIST_OF_STRING)
+                return "Type=" + LocalType + "Position=" + Position + " Kind=" + Kind + " Value=[" + string.Join(", ", Value) + "]";
+            return "Type=" + LocalType + "Position=" + Position + " Kind=" + Kind + " Value=" + Value;
 
         }
     }

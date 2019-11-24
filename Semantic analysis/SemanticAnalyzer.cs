@@ -16,10 +16,9 @@ namespace Chimera
         //-----------------------------------------------------------
         static readonly IDictionary<TokenCategory, Type> typeMapper =
             new Dictionary<TokenCategory, Type>() {
-                /*
-                { TokenCategory.BOOL, Type.BOOL },
-                { TokenCategory.INT, Type.INT }
-                */               
+                { TokenCategory.BOOLEAN, Type.BOOLEAN },
+                { TokenCategory.INTEGER, Type.INTEGER },
+                { TokenCategory.STRING, Type.STRING },
             };
 
         //-----------------------------------------------------------
@@ -54,29 +53,44 @@ namespace Chimera
         //-----------------------------------------------------------
         public Type Visit(Program node)
         {
-            VisitChildren(node);
+            VisitChildren(node, GSTable);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ConstantDeclarationList node)
+        public Type Visit(ConstantDeclarationList node, Table table)
         {
-            VisitChildren(node);
+            VisitChildren(node, table);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ConstantDeclaration node)
+        public Type Visit(ConstantDeclaration node, Table table)
         {
-            var globalSymbolName = node.AnchorToken.Lexeme;
-            if (GSTable.Contains(globalSymbolName))
-                throw new SemanticError("Duplicated symbol: " + globalSymbolName, node[0].AnchorToken);
+            GlobalSymbolTable gstable = table as GlobalSymbolTable;
+            LocalSymbolTable lstable = table as LocalSymbolTable;
 
-            Type nodeType = Visit((dynamic)node[0]);
+            var symbolName = node.AnchorToken.Lexeme;
+            if (table is GlobalSymbolTable)
+            {
+                if (GSTable.Contains(symbolName))
+                    throw new SemanticError("Duplicated symbol: " + symbolName, node[0].AnchorToken);
+            }
+            else if (table is LocalSymbolTable)
+            {
+                if (lstable.Contains(symbolName))
+                    throw new SemanticError("Duplicated symbol: " + symbolName, node[0].AnchorToken);
+            }
+            else
+            {
+                throw new TypeAccessException("Expecting either a GlobalSymbolTable or a LocalSymboltable");
+            }
+
+            Type nodeType = Visit((dynamic)node[0], table);
             if (node[0] is Lst)
             {
                 if (node[0].Count() == 0)
-                    throw new SemanticError("Constant lists cannot be empty: " + globalSymbolName, node.AnchorToken);
+                    throw new SemanticError("Constant lists cannot be empty: " + symbolName, node.AnchorToken);
 
                 dynamic lst;
                 if (nodeType == Type.LIST_OF_BOOLEAN)
@@ -91,59 +105,119 @@ namespace Chimera
                 int i = 0;
                 foreach (var n in node[0])
                     lst[i++] = n.ExtractValue();
-                GSTable[globalSymbolName] = new GlobalSymbol(nodeType, lst);
+                if (table is GlobalSymbolTable)
+                    gstable[symbolName] = new GlobalSymbol(nodeType, lst);
+                else if (table is LocalSymbolTable)
+                    lstable[symbolName] = new LocalSymbol(nodeType, lst);
+                else
+                    throw new TypeAccessException("Expecting either a GlobalSymbolTable or a LocalSymboltable");
             }
             else
             {
-                GSTable[globalSymbolName] = new GlobalSymbol(nodeType, node[0].ExtractValue());
+                if (table is GlobalSymbolTable)
+                    gstable[symbolName] = new GlobalSymbol(nodeType, node[0].ExtractValue());
+                else if (table is LocalSymbolTable)
+                    lstable[symbolName] = new LocalSymbol(nodeType, node[0].ExtractValue());
+                else
+                    throw new TypeAccessException("Expecting either a GlobalSymbolTable or a LocalSymboltable");
             }
             
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(VariableDeclarationList node)
+        public Type Visit(VariableDeclarationList node, Table table)
         {
-            VisitChildren(node);
+            VisitChildren(node, table);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(VariableDeclaration node)
+        public Type Visit(VariableDeclaration node, Table table)
         {
-            Type declarationType = Visit((dynamic)node[1]);
+            GlobalSymbolTable gstable = table as GlobalSymbolTable;
+            LocalSymbolTable lstable = table as LocalSymbolTable;
+
+            Type declarationType = Visit((dynamic)node[1], table);
             foreach (var n in node[0])
             {
-                var globalSymbolName = n.AnchorToken.Lexeme;
-                if (GSTable.Contains(globalSymbolName))
+                var symbolName = n.AnchorToken.Lexeme;
+                if (table is GlobalSymbolTable)
                 {
-                    throw new SemanticError("Duplicated symbol: " + globalSymbolName, n.AnchorToken);
+                    if (GSTable.Contains(symbolName))
+                        throw new SemanticError("Duplicated symbol: " + symbolName, n.AnchorToken);
                 }
-                GSTable[globalSymbolName] = new GlobalSymbol(declarationType);
+                else if (table is LocalSymbolTable)
+                {
+                    if (lstable.Contains(symbolName))
+                        throw new SemanticError("Duplicated symbol: " + symbolName, n.AnchorToken);
+                }
+                else
+                {
+                    throw new TypeAccessException("Expecting either a GlobalSymbolTable or a LocalSymboltable");
+                }
+
+                if (table is GlobalSymbolTable)
+                    gstable[symbolName] = new GlobalSymbol(declarationType);
+                else if (table is LocalSymbolTable)
+                    lstable[symbolName] = new LocalSymbol(declarationType);
+                else
+                    throw new TypeAccessException("Expecting either a GlobalSymbolTable or a LocalSymboltable");
             }
 
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ProcedureDeclarationList node)
+        public Type Visit(ProcedureDeclarationList node, Table table)
         {
-            VisitChildren(node);
+            VisitChildren(node, table);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(StatementList node)
+        public Type Visit(ProcedureDeclaration node, Table table)
         {
-            VisitChildren(node);
+            GlobalSymbolTable gstable = table as GlobalSymbolTable;
+            if (table == null)
+                throw new TypeAccessException("Expecting a GlobalSymbolTable");
+
+            var procedureName = node.AnchorToken.Lexeme;
+            if (gstable.Contains(procedureName))
+                throw new SemanticError("Duplicated procedure: " + procedureName, node.AnchorToken);
+
+            if (node[1] is SimpleType || node[1] is ListType)
+            { 
+                GPTable[procedureName] = new GlobalProcedure(false, Visit((dynamic)node[1], table));
+                var i = 0;
+                foreach (var n in node)
+                {
+                    if (i != 1)
+                        Visit((dynamic)n, GPTable[procedureName].LocalSymbols);
+                    i++;
+                }
+            }
+            else
+            {
+                GPTable[procedureName] = new GlobalProcedure(false);
+                VisitChildren(node, GPTable[procedureName].LocalSymbols);
+            }
+
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(AssignmentStatement node)
+        public Type Visit(StatementList node, Table table)
         {
-            Type leftExpressionType = Visit((dynamic) node[0]);
-            Type rightExpressionType = Visit((dynamic) node[1]);
+            //VisitChildren(node, table);
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(AssignmentStatement node, Table table)
+        {
+            Type leftExpressionType = Visit((dynamic) node[0], table);
+            Type rightExpressionType = Visit((dynamic) node[1], table);
             if (leftExpressionType != rightExpressionType)
                 throw new SemanticError("Expecting type " + leftExpressionType + " instead of " + rightExpressionType + " in assignment statement" +
                 	"", node.AnchorToken);
@@ -152,7 +226,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ListType node)
+        public Type Visit(ListType node, Table table)
         {
             var tokcat = node.AnchorToken.Category;
             if (tokcat == TokenCategory.BOOLEAN)
@@ -165,12 +239,12 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(SimpleType node)
+        public Type Visit(SimpleType node, Table table)
         {
             var tokcat = node.AnchorToken.Category;
             if (tokcat == TokenCategory.BOOLEAN)
                 return Type.BOOLEAN;
-            else if (tokcat == TokenCategory.INTEGER)
+            if (tokcat == TokenCategory.INTEGER)
                 return Type.INTEGER;
             if (tokcat == TokenCategory.STRING)
                 return Type.STRING;
@@ -178,45 +252,44 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Lst node)
+        public Type Visit(Lst node, Table table)
         {
             if (node.Count() > 0)
             {
-                Type lstType = Visit((dynamic)node[0]);
+                Type lstType = Visit((dynamic)node[0], table);
                 foreach (var n in node)
                 {
-                    Type elmType = Visit((dynamic)n);
+                    Type elmType = Visit((dynamic)n, table);
                     if (elmType != lstType)
                         throw new SemanticError("All list elements should be of the same type: ", n.AnchorToken);
                 }
 
                 if (lstType == Type.BOOLEAN)
                     return Type.LIST_OF_BOOLEAN;
-                else if (lstType == Type.INTEGER)
+                if (lstType == Type.INTEGER)
                     return Type.LIST_OF_INTEGER;
-                else if (lstType == Type.STRING)
+                if (lstType == Type.STRING)
                     return Type.LIST_OF_STRING;
-                else
-                    throw new TypeAccessException("Expecting one of the following node types: BOOLEAN, INTEGER, STRING");
+                throw new TypeAccessException("Expecting one of the following node types: BOOLEAN, INTEGER, STRING");
             }
 
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(True node)
+        public Type Visit(True node, Table table)
         {
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(False node)
+        public Type Visit(False node, Table table)
         {
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(IntegerLiteral node)
+        public Type Visit(IntegerLiteral node, Table table)
         {
             var intStr = node.AnchorToken.Lexeme;
 
@@ -233,24 +306,24 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(StringLiteral node)
+        public Type Visit(StringLiteral node, Table table)
         {
             return Type.STRING;
         }
 
         //-----------------------------------------------------------
-        private Type Visit(Node node)
+        private Type Visit(Node node, Table table)
         {
             Console.WriteLine(node + " visit not implemented yet");
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        private void VisitChildren(Node node)
+        private void VisitChildren(Node node, Table table)
         {
             foreach (var n in node)
             {
-                Visit((dynamic)n);
+                Visit((dynamic)n, table);
             }
         }
 

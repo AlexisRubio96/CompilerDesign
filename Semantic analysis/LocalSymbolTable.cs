@@ -21,15 +21,15 @@ namespace Chimera
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("Local Symbol Table\n");
-            sb.Append("====================\n");
+            sb.Append("\nLocal Symbol Table\n");
+            sb.Append("++++++++++++++++++++\n");
             foreach (var entry in data)
             {
                 sb.Append(String.Format("{0}: {1}\n",
                                         entry.Key,
                                         entry.Value));
             }
-            sb.Append("====================\n");
+            sb.Append("++++++++++++++++++++\n");
             return sb.ToString();
         }
 

@@ -51,6 +51,8 @@ namespace Chimera
         //-----------------------------------------------------------
         public override string ToString()
         {
+            if (TheType == Type.LIST_OF_BOOLEAN || TheType == Type.LIST_OF_INTEGER || TheType == Type.LIST_OF_STRING)
+                return "IsConstant=" + IsConstant + " Type=" + TheType + " Value=[" + string.Join(", ", Value) + "]";
             return "IsConstant=" + IsConstant + " Type=" + TheType + " Value=" + Value ;
         }
     }
