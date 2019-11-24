@@ -1,6 +1,7 @@
+var x: integer;
+    ul: list of integer;
 program
-	x := 2;
-	ul[random(5)] := ol[1];
+	ul[0] := x;
 	min();
 	maximum(0, 1, nums[2]);
 	loop

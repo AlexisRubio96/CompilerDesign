@@ -15,7 +15,11 @@ namespace Chimera
     {
 
         Boolean IsConstant;
-        Type TheType;
+        public Type TheType
+        {
+            get;
+            private set;
+        }
         dynamic Value;
 
         //-----------------------------------------------------------

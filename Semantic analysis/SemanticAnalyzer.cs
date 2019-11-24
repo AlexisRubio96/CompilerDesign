@@ -238,7 +238,7 @@ namespace Chimera
         //-----------------------------------------------------------
         public Type Visit(StatementList node, Table table)
         {
-            //VisitChildren(node, table);
+            VisitChildren(node, table);
             return Type.VOID;
         }
 
@@ -278,6 +278,88 @@ namespace Chimera
             if (tokcat == TokenCategory.STRING)
                 return Type.STRING;
             throw new TypeAccessException("Expecting one of the following node types: BOOLEAN, INTEGER, STRING");
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Identifier node, Table table)
+        {
+            GlobalSymbolTable gstable = table as GlobalSymbolTable;
+            LocalSymbolTable lstable = table as LocalSymbolTable;
+           
+            var symbolName = node.AnchorToken.Lexeme;
+            if (table is GlobalSymbolTable)
+            {
+                if (gstable.Contains(symbolName))
+                    return gstable[symbolName].TheType;
+                throw new SemanticError("Undeclared variable: " + symbolName, node.AnchorToken);
+            }
+            else if (table is LocalSymbolTable)
+            {
+                if (lstable.Contains(symbolName))
+                    return lstable[symbolName].LocalType;
+                if (GSTable.Contains(symbolName))
+                    return GSTable[symbolName].TheType;
+                throw new SemanticError("Undeclared variable: " + symbolName, node.AnchorToken);
+            }
+            else
+            {
+                throw new TypeAccessException("Expecting either a GlobalSymbolTable or a LocalSymboltable");
+            }
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(ListIndexExpression node, Table table)
+        {
+            GlobalSymbolTable gstable = table as GlobalSymbolTable;
+            LocalSymbolTable lstable = table as LocalSymbolTable;
+
+            Type index = Visit((dynamic)node[1], table);
+            if (index != Type.INTEGER)
+                throw new SemanticError("Expecting an integer type instead of " + index, node[1].AnchorToken);
+
+            var listName = node[0].AnchorToken.Lexeme;
+            if (table is GlobalSymbolTable)
+            {
+                if (gstable.Contains(listName))
+                {
+                    if (gstable[listName].TheType == Type.LIST_OF_BOOLEAN)
+                        return Type.BOOLEAN;
+                    if (gstable[listName].TheType == Type.LIST_OF_INTEGER)
+                        return Type.INTEGER;
+                    if (gstable[listName].TheType == Type.LIST_OF_STRING)
+                        return Type.STRING;
+                    throw new SemanticError("Expecting a list type instead of " + gstable[listName].TheType, node[0].AnchorToken);
+                }
+                throw new SemanticError("Undeclared variable: " + listName, node[0].AnchorToken);
+            }
+            else if (table is LocalSymbolTable)
+            {
+                if (lstable.Contains(listName))
+                {
+                    if (lstable[listName].LocalType == Type.LIST_OF_BOOLEAN)
+                        return Type.BOOLEAN;
+                    if (lstable[listName].LocalType == Type.LIST_OF_INTEGER)
+                        return Type.INTEGER;
+                    if (lstable[listName].LocalType == Type.LIST_OF_STRING)
+                        return Type.STRING;
+                    throw new SemanticError("Expecting a list type instead of " + lstable[listName].LocalType, node[0].AnchorToken);
+                }
+                if (GSTable.Contains(listName))
+                {
+                    if (GSTable[listName].TheType == Type.LIST_OF_BOOLEAN)
+                        return Type.BOOLEAN;
+                    if (GSTable[listName].TheType == Type.LIST_OF_INTEGER)
+                        return Type.INTEGER;
+                    if (GSTable[listName].TheType == Type.LIST_OF_STRING)
+                        return Type.STRING;
+                    throw new SemanticError("Expecting a list type instead of " + GSTable[listName].TheType, node[0].AnchorToken);
+                }
+                throw new SemanticError("Undeclared variable: " + listName, node[0].AnchorToken);
+            }
+            else
+            {
+                throw new TypeAccessException("Expecting either a GlobalSymbolTable or a LocalSymboltable");
+            }
         }
 
         //-----------------------------------------------------------

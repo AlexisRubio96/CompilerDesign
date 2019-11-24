@@ -13,8 +13,11 @@ namespace Chimera
 
     public class LocalSymbol
     {
-        Type LocalType;
-
+        public Type LocalType
+        {
+            get;
+            private set;
+        }
         int Position;
         dynamic Value;
         Clasification Kind;
