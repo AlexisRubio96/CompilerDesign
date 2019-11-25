@@ -1,11 +1,12 @@
+var r: boolean;
 procedure isEqual
 (a, b: integer;) : boolean;
 const epsilon := 3;
 var result: boolean;
 begin
-	//result := a - b < 3;
+	result := a - b < 3;
 	return result;
 end;
 program
-isEqual(0, 1);
+r := isEqual(0, 1);
 end;

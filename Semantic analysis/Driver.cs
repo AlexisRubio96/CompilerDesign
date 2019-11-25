@@ -92,8 +92,8 @@ namespace Chimera
                 /* Lexical + syntactic analysis + AST construction + Semantic Analyzer*/
                 var parser = new Parser(new Scanner(input).Start().GetEnumerator());
                 var program = parser.Program();
-                Console.Write(program.ToStringTree());//
-                Console.WriteLine("---FINISH SYNTAX TREE---");
+                //Console.Write(program.ToStringTree());//
+                //Console.WriteLine("---FINISH SYNTAX TREE---");
                 var semantic = new SemanticAnalyzer();
                 semantic.Visit((dynamic)program);
 

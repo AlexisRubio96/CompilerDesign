@@ -411,6 +411,73 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
+        public Type Visit(ReturnStatement node, Table table)
+        {
+            GlobalSymbolTable gstable = table as GlobalSymbolTable;
+            LocalSymbolTable lstable = table as LocalSymbolTable;
+
+            if (table is GlobalSymbolTable)
+            {
+                if (node.Count() != 0)
+                    throw new SemanticError("Return statement cannot return values in main section", node.AnchorToken);
+                return Type.VOID;
+            }
+            else
+            {
+                Type returnType = Visit((dynamic)node[0], table);
+                //Search for the procedure in which the return statement was called and compare return types
+                foreach (KeyValuePair<string, GlobalProcedure> entry in GPTable)
+                {
+                    var proc = entry.Value;
+                    if (proc.LocalSymbols == table)
+                    {
+                        if (proc.ReturnType != returnType)
+                            throw new SemanticError("Incorrect return statement. Expecting a " + proc.ReturnType + ", but found a " + returnType, node.AnchorToken);
+                        break;
+                    }
+                }
+
+                LoopNestingLevel = 0;
+                return returnType;
+            }
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(ExitStatement node, Table table)
+        {
+            if (LoopNestingLevel == 0)
+                throw new SemanticError("Exit statement must be inside a loop or for statement", node.AnchorToken);
+
+            LoopNestingLevel--;
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Call node, Table table)
+        {
+            var procName = node.AnchorToken.Lexeme;
+            if (!GPTable.Contains(procName))
+                throw new SemanticError("The procedure " + procName + " is not defined", node.AnchorToken);
+                
+            GlobalProcedure gp = GPTable[procName];
+
+            var parameterList = gp.getParameters();
+            if (node.Count() != parameterList.Length)
+                throw new SemanticError("Incorrect arity. Expecting " + parameterList.Length + " arguments, but found " + node.Count(), node.AnchorToken);
+
+            int i = 0;
+            foreach (var parameter in gp.getParameters())
+            {
+                Type argumType = Visit((dynamic)node[i], table);
+                if (argumType != parameter.LocalType)
+                    throw new SemanticError("Incorrect argument. Expecting a " + parameter.LocalType + ", but found a " + argumType, node[i].AnchorToken);
+                i++;
+            }
+
+            return gp.ReturnType;
+        }
+
+        //-----------------------------------------------------------
         public Type Visit(ListType node, Table table)
         {
             var tokcat = node.AnchorToken.Category;
