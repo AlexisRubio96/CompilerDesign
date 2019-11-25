@@ -1,9 +1,11 @@
 const ul := {2,1,3};
 var 
     x: integer;
+procedure proc();
+begin end;
 program
-	ul := ul;
-	min();
+	ul[0] := x;
+	proc();
 	maximum(0, 1, nums[2]);
 	loop
 	    exit;

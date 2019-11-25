@@ -18,7 +18,11 @@ namespace Chimera
             get;
             private set;
         }
-        int Position;
+        public int Position
+        {
+            get;
+            private set;
+        }
         dynamic Value;
         public Clasification Kind
         {
@@ -43,7 +47,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public LocalSymbol(Type LocalType, int Position)
+        public LocalSymbol(int Position, Type LocalType)
         {
             this.Kind = Clasification.PARAM;
             this.LocalType = LocalType;

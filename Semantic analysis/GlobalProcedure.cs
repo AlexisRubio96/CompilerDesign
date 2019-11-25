@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace Chimera
 {
-//
+    //
     public class GlobalProcedure
     {
 
@@ -36,6 +36,21 @@ namespace Chimera
             this.IsPredefined = IsPredefined;
             this.ReturnType = Type.VOID;
             this.LocalSymbols = new LocalSymbolTable();
+        }
+
+        //-----------------------------------------------------------
+        public LocalSymbol[] getParameters()
+        {
+            List<LocalSymbol> parameters = new List<LocalSymbol>();
+            foreach (var ls in LocalSymbols)
+            {
+                if (ls.Value.Kind == Clasification.PARAM)
+                    parameters.Add(ls.Value);
+            }
+
+            parameters.Sort((a, b) => a.Position.CompareTo(b.Position));
+
+            return parameters.ToArray();
         }
 
         //-----------------------------------------------------------

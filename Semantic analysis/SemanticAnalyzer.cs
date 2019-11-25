@@ -211,12 +211,12 @@ namespace Chimera
         {
             int i = 0;
             foreach (var n in node)
-                Visit((dynamic)n, table, i++);
+                Visit((dynamic)n, table, ref i);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ParameterDeclaration node, Table table, int position)
+        public Type Visit(ParameterDeclaration node, Table table, ref int position)
         {
             LocalSymbolTable lstable = table as LocalSymbolTable;
             if (lstable == null)
@@ -229,7 +229,7 @@ namespace Chimera
                 if (lstable.Contains(symbolName))
                     throw new SemanticError("Duplicated symbol: " + symbolName, n.AnchorToken);
 
-                lstable[symbolName] = new LocalSymbol(paramType, position);
+                lstable[symbolName] = new LocalSymbol(position++, paramType);
             }
 
             return Type.VOID;
@@ -248,9 +248,7 @@ namespace Chimera
             Type leftExpressionType = Visit((dynamic) node[0], table);
             Type rightExpressionType = Visit((dynamic) node[1], table);
             if (leftExpressionType != rightExpressionType)
-                throw new SemanticError("Expecting type " + leftExpressionType + " instead of " + rightExpressionType + " in assignment statement" +
-                	"", node.AnchorToken);
-
+                throw new SemanticError("Expecting type " + leftExpressionType + " instead of " + rightExpressionType + " in assignment statement", node.AnchorToken);
 
             if (node[0] is Identifier)
             {
@@ -279,7 +277,71 @@ namespace Chimera
             return Type.VOID;
         }
 
+        //-----------------------------------------------------------
+        public Type Visit(CallStatement node, Table table)
+        {
+            var procName = node.AnchorToken.Lexeme;
+            if (!GPTable.Contains(procName))
+                throw new SemanticError("The procedure " + procName + " is not defined", node.AnchorToken);
 
+            //Check arity and types
+            GlobalProcedure gp = GPTable[procName];
+            var parameterList = gp.getParameters();
+
+            if (node.Count() != parameterList.Length)
+                throw new SemanticError("Incorrect arity. Expecting " + parameterList.Length + " arguments, but found " + node.Count(), node.AnchorToken);
+
+            int i = 0;
+            foreach (var parameter in gp.getParameters())
+            {
+                Type argumType = Visit((dynamic)node[i], table);
+                if (argumType != parameter.LocalType)
+                    throw new SemanticError("Incorrect argument. Expecting a " + parameter.LocalType + ", but found a " + argumType, node[i].AnchorToken);
+                i++;
+            }
+
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(IfStatement node, Table table)
+        {
+            VisitChildren(node, table);
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(IfClause node, Table table)
+        {
+            Type condType = Visit((dynamic)node[0], table);
+            if (condType != Type.BOOLEAN)
+                throw new SemanticError("If condition must be evaluated to a boolean value", node[0].AnchorToken);
+
+            for (var i = 1; i < node.Count(); i++)
+                Visit((dynamic)node[i], table);
+
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(ElseIfClause node, Table table)
+        {
+            Type condType = Visit((dynamic)node[0], table);
+            if (condType != Type.BOOLEAN)
+                throw new SemanticError("If condition must be evaluated to a boolean value", node[0].AnchorToken);
+
+            for (var i = 1; i < node.Count(); i++)
+                Visit((dynamic)node[i], table);
+
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(ElseClause node, Table table)
+        {
+            VisitChildren(node, table);
+            return Type.VOID;
+        }
 
         //-----------------------------------------------------------
         public Type Visit(ListType node, Table table)
