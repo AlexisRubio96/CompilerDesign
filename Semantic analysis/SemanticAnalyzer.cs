@@ -286,6 +286,9 @@ namespace Chimera
 
             //Check arity and types
             GlobalProcedure gp = GPTable[procName];
+            if (gp.ReturnType != Type.VOID)
+                throw new SemanticError(procName + " call statement cannot return any value", node.AnchorToken);
+
             var parameterList = gp.getParameters();
 
             if (node.Count() != parameterList.Length)
@@ -340,6 +343,70 @@ namespace Chimera
         public Type Visit(ElseClause node, Table table)
         {
             VisitChildren(node, table);
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(LoopStatement node, Table table)
+        {
+            LoopNestingLevel++;
+            VisitChildren(node, table);
+            return Type.VOID;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(ForStatement node, Table table)
+        {
+            LoopNestingLevel++;
+            
+            Type varType = Visit((dynamic)node[0], table);
+
+            var varName = node[0].AnchorToken.Lexeme;
+            GlobalSymbolTable gstable = table as GlobalSymbolTable;
+            LocalSymbolTable lstable = table as LocalSymbolTable;
+            if (table is GlobalSymbolTable)
+            {
+                if (gstable[varName].IsConstant)
+                    throw new SemanticError("Loop variable " + varName + " cannot be a constant", node[0].AnchorToken);
+            }
+            else
+            {
+                if (lstable.Contains(varName))
+                {
+                    if (lstable[varName].Kind != Clasification.VAR)
+                        throw new SemanticError("Loop variable " + varName + " cannot be a constant or parameter", node[0].AnchorToken);
+                }
+                else
+                {
+                    if (GSTable[varName].IsConstant)
+                        throw new SemanticError("Loop variable " + varName + " cannot be a constant", node[0].AnchorToken);
+                }
+            }
+
+            Type iterableType = Visit((dynamic)node[1], table);
+            if (iterableType == Type.LIST_OF_BOOLEAN)
+            {
+                if (varType != Type.BOOLEAN)
+                    throw new SemanticError("Incorrect loop variable \"" + varName + "\". Expecting " + Type.BOOLEAN + ", but found " + varType, node[0].AnchorToken);
+            }
+            else if (iterableType == Type.LIST_OF_INTEGER)
+            {
+                if (varType != Type.INTEGER)
+                    throw new SemanticError("Incorrect loop variable \"" + varName + "\". Expecting " + Type.INTEGER + ", but found " + varType, node[0].AnchorToken);
+            }
+            else if (iterableType == Type.LIST_OF_STRING)
+            {
+                if (varType != Type.STRING)
+                    throw new SemanticError("Incorrect loop variable \"" + varName + "\". Expecting " + Type.STRING + ", but found " + varType, node[0].AnchorToken);
+            }
+            else
+            {
+                throw new SemanticError("Loop can only iterate over list types, but found " + iterableType, node[1].AnchorToken);
+            }
+
+            for (var i = 2; i < node.Count(); i++)
+                Visit((dynamic)node[i], table);
+               
             return Type.VOID;
         }
 
@@ -399,56 +466,18 @@ namespace Chimera
         //-----------------------------------------------------------
         public Type Visit(ListIndexExpression node, Table table)
         {
-            GlobalSymbolTable gstable = table as GlobalSymbolTable;
-            LocalSymbolTable lstable = table as LocalSymbolTable;
-
             Type index = Visit((dynamic)node[1], table);
             if (index != Type.INTEGER)
                 throw new SemanticError("Expecting an integer type instead of " + index, node[1].AnchorToken);
 
-            var listName = node[0].AnchorToken.Lexeme;
-            if (table is GlobalSymbolTable)
-            {
-                if (gstable.Contains(listName))
-                {
-                    if (gstable[listName].TheType == Type.LIST_OF_BOOLEAN)
-                        return Type.BOOLEAN;
-                    if (gstable[listName].TheType == Type.LIST_OF_INTEGER)
-                        return Type.INTEGER;
-                    if (gstable[listName].TheType == Type.LIST_OF_STRING)
-                        return Type.STRING;
-                    throw new SemanticError("Expecting a list type instead of " + gstable[listName].TheType, node[0].AnchorToken);
-                }
-                throw new SemanticError("Undeclared variable: " + listName, node[0].AnchorToken);
-            }
-            else if (table is LocalSymbolTable)
-            {
-                if (lstable.Contains(listName))
-                {
-                    if (lstable[listName].LocalType == Type.LIST_OF_BOOLEAN)
-                        return Type.BOOLEAN;
-                    if (lstable[listName].LocalType == Type.LIST_OF_INTEGER)
-                        return Type.INTEGER;
-                    if (lstable[listName].LocalType == Type.LIST_OF_STRING)
-                        return Type.STRING;
-                    throw new SemanticError("Expecting a list type instead of " + lstable[listName].LocalType, node[0].AnchorToken);
-                }
-                if (GSTable.Contains(listName))
-                {
-                    if (GSTable[listName].TheType == Type.LIST_OF_BOOLEAN)
-                        return Type.BOOLEAN;
-                    if (GSTable[listName].TheType == Type.LIST_OF_INTEGER)
-                        return Type.INTEGER;
-                    if (GSTable[listName].TheType == Type.LIST_OF_STRING)
-                        return Type.STRING;
-                    throw new SemanticError("Expecting a list type instead of " + GSTable[listName].TheType, node[0].AnchorToken);
-                }
-                throw new SemanticError("Undeclared variable: " + listName, node[0].AnchorToken);
-            }
-            else
-            {
-                throw new TypeAccessException("Expecting either a GlobalSymbolTable or a LocalSymboltable");
-            }
+            Type listType = Visit((dynamic)node[0], table);
+            if (listType == Type.LIST_OF_BOOLEAN)
+                return Type.BOOLEAN;
+            if (listType == Type.LIST_OF_INTEGER)
+                return Type.INTEGER;
+            if (listType == Type.LIST_OF_STRING)
+                return Type.STRING;
+            throw new SemanticError("Expecting a list type instead of " + listType, node[0].AnchorToken);
         }
 
         //-----------------------------------------------------------
@@ -509,6 +538,159 @@ namespace Chimera
         public Type Visit(StringLiteral node, Table table)
         {
             return Type.STRING;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(And node, Table table)
+        {
+            VisitBinaryOperator("and", node, Type.BOOLEAN, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Xor node, Table table)
+        {
+            VisitBinaryOperator("xor", node, Type.BOOLEAN, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Or node, Table table)
+        {
+            VisitBinaryOperator("or", node, Type.BOOLEAN, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Equal node, Table table)
+        {
+            VisitBinaryOperatorEquality("=", node, Type.BOOLEAN, Type.INTEGER, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(NotEqual node, Table table)
+        {
+            VisitBinaryOperatorEquality("<>", node, Type.BOOLEAN, Type.INTEGER, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Smaller node, Table table)
+        {
+            VisitBinaryOperator("<", node, Type.INTEGER, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Greater node, Table table)
+        {
+            VisitBinaryOperator(">", node, Type.INTEGER, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(SmallerEq node, Table table)
+        {
+            VisitBinaryOperator("<=", node, Type.INTEGER, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(GreaterEq node, Table table)
+        {
+            VisitBinaryOperator(">=", node, Type.INTEGER, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Plus node, Table table)
+        {
+            VisitBinaryOperator("+", node, Type.INTEGER, table);
+            return Type.INTEGER;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Minus node, Table table)
+        {
+            VisitBinaryOperator("-", node, Type.INTEGER, table);
+            return Type.INTEGER;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Mul node, Table table)
+        {
+            VisitBinaryOperator("*", node, Type.INTEGER, table);
+            return Type.INTEGER;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Div node, Table table)
+        {
+            VisitBinaryOperator("div", node, Type.INTEGER, table);
+            return Type.INTEGER;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Rem node, Table table)
+        {
+            VisitBinaryOperator("rem", node, Type.INTEGER, table);
+            return Type.INTEGER;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Not node, Table table)
+        {
+            VisitBinaryOperatorNegation("not", node, Type.BOOLEAN, table);
+            return Type.BOOLEAN;
+        }
+
+        //-----------------------------------------------------------
+        public Type Visit(Negative node, Table table)
+        {
+            VisitBinaryOperatorNegation("-", node, Type.INTEGER, table);
+            return Type.INTEGER;
+        }
+
+        //-----------------------------------------------------------
+        private void VisitBinaryOperator(String op, Node node, Type type, Table table)
+        {
+            if (Visit((dynamic)node[0], table) != type || Visit((dynamic)node[1], table) != type)
+            {
+                throw new SemanticError(
+                    String.Format("Operator {0} requires two operands of type {1}", op, type),
+                    node.AnchorToken);
+            }
+        }
+
+        //-----------------------------------------------------------
+        private void VisitBinaryOperatorEquality(String op, Node node, Type typeA, Type typeB, Table table)
+        {
+            if (Visit((dynamic)node[0], table) == typeA)
+            {
+                VisitBinaryOperator(op, node, typeA, table);
+            }
+            else if (Visit((dynamic)node[0], table) == typeB)
+            {
+                VisitBinaryOperator(op, node, typeB, table);
+            }
+            else
+            {
+                throw new SemanticError(
+                    String.Format("Operator {0} requires two operands of type {1} or {2}", op, typeA, typeB),
+                    node.AnchorToken);
+            }
+        }
+
+        //-----------------------------------------------------------
+        private void VisitBinaryOperatorNegation(String op, Node node, Type type, Table table)
+        {
+            if (Visit((dynamic)node[0], table) != type)
+            {
+                throw new SemanticError(
+                    String.Format( "Operator {0} requires an operand of type {1}", op, type),
+                    node.AnchorToken);
+            }
         }
 
         //-----------------------------------------------------------

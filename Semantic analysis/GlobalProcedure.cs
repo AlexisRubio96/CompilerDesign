@@ -15,7 +15,11 @@ namespace Chimera
     {
 
         Boolean IsPredefined;
-        Type ReturnType;
+        public Type ReturnType
+        {
+            get;
+            private set;
+        }
         public LocalSymbolTable LocalSymbols
         {
             get;
