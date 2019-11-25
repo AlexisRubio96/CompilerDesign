@@ -12,15 +12,7 @@ namespace Chimera
 
     class SemanticAnalyzer
     {
-
-        //-----------------------------------------------------------
-        static readonly IDictionary<TokenCategory, Type> typeMapper =
-            new Dictionary<TokenCategory, Type>() {
-                { TokenCategory.BOOLEAN, Type.BOOLEAN },
-                { TokenCategory.INTEGER, Type.INTEGER },
-                { TokenCategory.STRING, Type.STRING },
-            };
-
+    
         //-----------------------------------------------------------
         public GlobalSymbolTable GSTable
         {
@@ -47,6 +39,62 @@ namespace Chimera
         {
             GSTable = new GlobalSymbolTable();
             GPTable = new GlobalProcedureTable();
+
+            GPTable["WrInt"] = new GlobalProcedure(true, Type.VOID);
+            GPTable["WrInt"].LocalSymbols["i"] = new LocalSymbol(0, Type.INTEGER);
+
+            GPTable["WrStr"] = new GlobalProcedure(true, Type.VOID);
+            GPTable["WrStr"].LocalSymbols["s"] = new LocalSymbol(0, Type.STRING);
+
+            GPTable["WrBool"] = new GlobalProcedure(true, Type.VOID);
+            GPTable["WrBool"].LocalSymbols["b"] = new LocalSymbol(0, Type.BOOLEAN);
+
+            GPTable["WrLn"] = new GlobalProcedure(true, Type.VOID);
+
+            GPTable["RdInt"] = new GlobalProcedure(true, Type.INTEGER);
+
+            GPTable["RdStr"] = new GlobalProcedure(true, Type.STRING);
+
+            GPTable["AtStr"] = new GlobalProcedure(true, Type.STRING);
+            GPTable["AtStr"].LocalSymbols["s"] = new LocalSymbol(0, Type.STRING);
+            GPTable["AtStr"].LocalSymbols["i"] = new LocalSymbol(1, Type.INTEGER);
+
+            GPTable["LenStr"] = new GlobalProcedure(true, Type.INTEGER);
+            GPTable["LenStr"].LocalSymbols["s"] = new LocalSymbol(0, Type.STRING);
+
+            GPTable["CmpStr"] = new GlobalProcedure(true, Type.INTEGER);
+            GPTable["CmpStr"].LocalSymbols["s1"] = new LocalSymbol(0, Type.STRING);
+            GPTable["CmpStr"].LocalSymbols["s2"] = new LocalSymbol(1, Type.STRING);
+
+            GPTable["CatStr"] = new GlobalProcedure(true, Type.STRING);
+            GPTable["CatStr"].LocalSymbols["s1"] = new LocalSymbol(0, Type.STRING);
+            GPTable["CatStr"].LocalSymbols["s2"] = new LocalSymbol(1, Type.STRING);
+
+            GPTable["LenLstInt"] = new GlobalProcedure(true, Type.INTEGER);
+            GPTable["LenLstInt"].LocalSymbols["loi"] = new LocalSymbol(0, Type.LIST_OF_INTEGER);
+
+            GPTable["LenLstStr"] = new GlobalProcedure(true, Type.INTEGER);
+            GPTable["LenLstStr"].LocalSymbols["los"] = new LocalSymbol(0, Type.LIST_OF_STRING);
+
+            GPTable["LenLstBool"] = new GlobalProcedure(true, Type.INTEGER);
+            GPTable["LenLstBool"].LocalSymbols["lob"] = new LocalSymbol(0, Type.LIST_OF_BOOLEAN);
+
+            GPTable["NewLstInt"] = new GlobalProcedure(true, Type.LIST_OF_INTEGER);
+            GPTable["NewLstInt"].LocalSymbols["size"] = new LocalSymbol(0, Type.INTEGER);
+
+            GPTable["NewLstStr"] = new GlobalProcedure(true, Type.LIST_OF_STRING);
+            GPTable["NewLstStr"].LocalSymbols["size"] = new LocalSymbol(0, Type.INTEGER);
+
+            GPTable["NewLstBool"] = new GlobalProcedure(true, Type.LIST_OF_BOOLEAN);
+            GPTable["NewLstBool"].LocalSymbols["size"] = new LocalSymbol(0, Type.INTEGER);
+
+            GPTable["IntToStr"] = new GlobalProcedure(true, Type.STRING);
+            GPTable["IntToStr"].LocalSymbols["i"] = new LocalSymbol(0, Type.INTEGER);
+
+            GPTable["StrToInt"] = new GlobalProcedure(true, Type.INTEGER);
+            GPTable["StrToInt"].LocalSymbols["s"] = new LocalSymbol(0, Type.STRING);
+
+
             LoopNestingLevel = 0;
         }
 
@@ -351,6 +399,7 @@ namespace Chimera
         {
             LoopNestingLevel++;
             VisitChildren(node, table);
+            LoopNestingLevel--;
             return Type.VOID;
         }
 
@@ -406,16 +455,14 @@ namespace Chimera
 
             for (var i = 2; i < node.Count(); i++)
                 Visit((dynamic)node[i], table);
-               
+
+            LoopNestingLevel--;
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
         public Type Visit(ReturnStatement node, Table table)
         {
-            GlobalSymbolTable gstable = table as GlobalSymbolTable;
-            LocalSymbolTable lstable = table as LocalSymbolTable;
-
             if (table is GlobalSymbolTable)
             {
                 if (node.Count() != 0)
@@ -437,7 +484,6 @@ namespace Chimera
                     }
                 }
 
-                LoopNestingLevel = 0;
                 return returnType;
             }
         }
@@ -447,8 +493,7 @@ namespace Chimera
         {
             if (LoopNestingLevel == 0)
                 throw new SemanticError("Exit statement must be inside a loop or for statement", node.AnchorToken);
-
-            LoopNestingLevel--;
+                
             return Type.VOID;
         }
 
