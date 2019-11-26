@@ -25,7 +25,6 @@ procedure F(
         WrLn();
         WrInt(z);
         WrLn();
-
         x := x + konstant;
         y := y + konstant;
         WrInt(x);

@@ -311,8 +311,16 @@ namespace Chimera
                 }
                 else if (table is LocalSymbolTable)
                 {
-                    if (lstable.Contains(symbolName) && lstable[symbolName].Kind == Clasification.CONST || GSTable.Contains(symbolName) && GSTable[symbolName].IsConstant)
-                        throw new SemanticError("Cannot perform assignment to constant " + symbolName, node[0].AnchorToken);
+                    if (lstable.Contains(symbolName))
+                    {
+                        if (lstable[symbolName].Kind == Clasification.CONST)
+                            throw new SemanticError("Cannot perform assignment to constant " + symbolName, node[0].AnchorToken);
+                    }
+                    else
+                    {
+                        if (GSTable.Contains(symbolName) && GSTable[symbolName].IsConstant)
+                            throw new SemanticError("Cannot perform assignment to constant " + symbolName, node[0].AnchorToken);
+                    }
                 }
                 else
                 {
