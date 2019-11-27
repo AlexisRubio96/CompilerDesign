@@ -22,7 +22,8 @@ namespace Chimera
             "Syntactic analysis",
             "AST construction",
             "Semantic analysis",
-            "Semantic analysis"
+            "Semantic analysis",
+            "CIL code generation"
         };
 
         //-----------------------------------------------------------
@@ -56,16 +57,16 @@ namespace Chimera
             PrintReleaseIncludes();
             Console.WriteLine();
 
-            if (args.Length != 1)
+            if (args.Length != 2)
             {
-                Console.Error.WriteLine(
-                    "Please specify the name of the input file.");
+                Console.Error.WriteLine("Please specify the name of the input and output files.");
                 Environment.Exit(1);
             }
 
             try
             {
                 var inputPath = args[0];
+                var outputPath = args[1];
                 var input = File.ReadAllText(inputPath);
 
                 /* Lexical analysis * /
@@ -92,16 +93,23 @@ namespace Chimera
                 /* Lexical + syntactic analysis + AST construction + Semantic Analyzer*/
                 var parser = new Parser(new Scanner(input).Start().GetEnumerator());
                 var program = parser.Program();
-                //Console.Write(program.ToStringTree());//
-                //Console.WriteLine("---FINISH SYNTAX TREE---");
+                Console.WriteLine("---START SYNTAX TREE---");
+                Console.Write(program.ToStringTree());//
+                Console.WriteLine("---END SYNTAX TREE---");
+
                 var semantic = new SemanticAnalyzer();
                 semantic.Visit((dynamic)program);
-
-                Console.WriteLine("Semantics OK.");
-                Console.WriteLine();
                 Console.WriteLine(semantic.GSTable);
                 Console.WriteLine(semantic.GPTable);
+                Console.WriteLine("Semantics OK.");
 
+
+                var codeGenerator = new CILGenerator(semantic.GSTable, semantic.GPTable);
+                var code = codeGenerator.Visit((dynamic)program);
+                File.WriteAllText(outputPath, code);
+                Console.WriteLine(code);
+                Console.WriteLine("Generated CIL code to '" + outputPath + "'.");
+                Console.WriteLine();
             }
             catch (FileNotFoundException e)
             {

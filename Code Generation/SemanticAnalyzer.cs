@@ -106,14 +106,14 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ConstantDeclarationList node, Table table)
+        private Type Visit(ConstantDeclarationList node, Table table)
         {
             VisitChildren(node, table);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ConstantDeclaration node, Table table)
+        private Type Visit(ConstantDeclaration node, Table table)
         {
             GlobalSymbolTable gstable = table as GlobalSymbolTable;
             LocalSymbolTable lstable = table as LocalSymbolTable;
@@ -174,14 +174,14 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(VariableDeclarationList node, Table table)
+        private Type Visit(VariableDeclarationList node, Table table)
         {
             VisitChildren(node, table);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(VariableDeclaration node, Table table)
+        private Type Visit(VariableDeclaration node, Table table)
         {
             GlobalSymbolTable gstable = table as GlobalSymbolTable;
             LocalSymbolTable lstable = table as LocalSymbolTable;
@@ -217,14 +217,14 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ProcedureDeclarationList node, Table table)
+        private Type Visit(ProcedureDeclarationList node, Table table)
         {
             VisitChildren(node, table);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ProcedureDeclaration node, Table table)
+        private Type Visit(ProcedureDeclaration node, Table table)
         {
             GlobalSymbolTable gstable = table as GlobalSymbolTable;
             if (table == null)
@@ -255,7 +255,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ParameterDeclarationList node, Table table)
+        private Type Visit(ParameterDeclarationList node, Table table)
         {
             int i = 0;
             foreach (var n in node)
@@ -264,7 +264,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ParameterDeclaration node, Table table, ref int position)
+        private Type Visit(ParameterDeclaration node, Table table, ref int position)
         {
             LocalSymbolTable lstable = table as LocalSymbolTable;
             if (lstable == null)
@@ -284,14 +284,14 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(StatementList node, Table table)
+        private Type Visit(StatementList node, Table table)
         {
             VisitChildren(node, table);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(AssignmentStatement node, Table table)
+        private Type Visit(AssignmentStatement node, Table table)
         {
             Type leftExpressionType = Visit((dynamic) node[0], table);
             Type rightExpressionType = Visit((dynamic) node[1], table);
@@ -334,7 +334,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(CallStatement node, Table table)
+        private Type Visit(CallStatement node, Table table)
         {
             var procName = node.AnchorToken.Lexeme;
             if (!GPTable.Contains(procName))
@@ -363,14 +363,14 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(IfStatement node, Table table)
+        private Type Visit(IfStatement node, Table table)
         {
             VisitChildren(node, table);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(IfClause node, Table table)
+        private Type Visit(IfClause node, Table table)
         {
             Type condType = Visit((dynamic)node[0], table);
             if (condType != Type.BOOLEAN)
@@ -383,7 +383,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ElseIfClause node, Table table)
+        private Type Visit(ElseIfClause node, Table table)
         {
             Type condType = Visit((dynamic)node[0], table);
             if (condType != Type.BOOLEAN)
@@ -396,14 +396,14 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ElseClause node, Table table)
+        private Type Visit(ElseClause node, Table table)
         {
             VisitChildren(node, table);
             return Type.VOID;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(LoopStatement node, Table table)
+        private Type Visit(LoopStatement node, Table table)
         {
             LoopNestingLevel++;
             VisitChildren(node, table);
@@ -412,7 +412,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ForStatement node, Table table)
+        private Type Visit(ForStatement node, Table table)
         {
             LoopNestingLevel++;
             
@@ -469,7 +469,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ReturnStatement node, Table table)
+        private Type Visit(ReturnStatement node, Table table)
         {
             if (table is GlobalSymbolTable)
             {
@@ -497,7 +497,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ExitStatement node, Table table)
+        private Type Visit(ExitStatement node, Table table)
         {
             if (LoopNestingLevel == 0)
                 throw new SemanticError("Exit statement must be inside a loop or for statement", node.AnchorToken);
@@ -506,7 +506,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Call node, Table table)
+        private Type Visit(Call node, Table table)
         {
             var procName = node.AnchorToken.Lexeme;
             if (!GPTable.Contains(procName))
@@ -531,7 +531,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ListType node, Table table)
+        private Type Visit(ListType node, Table table)
         {
             var tokcat = node.AnchorToken.Category;
             if (tokcat == TokenCategory.BOOLEAN)
@@ -544,7 +544,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(SimpleType node, Table table)
+        private Type Visit(SimpleType node, Table table)
         {
             var tokcat = node.AnchorToken.Category;
             if (tokcat == TokenCategory.BOOLEAN)
@@ -557,7 +557,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Identifier node, Table table)
+        private Type Visit(Identifier node, Table table)
         {
             GlobalSymbolTable gstable = table as GlobalSymbolTable;
             LocalSymbolTable lstable = table as LocalSymbolTable;
@@ -584,7 +584,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(ListIndexExpression node, Table table)
+        private Type Visit(ListIndexExpression node, Table table)
         {
             Type index = Visit((dynamic)node[1], table);
             if (index != Type.INTEGER)
@@ -601,7 +601,7 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Lst node, Table table)
+        private Type Visit(Lst node, Table table)
         {
             if (node.Count() > 0)
             {
@@ -626,19 +626,19 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(True node, Table table)
+        private Type Visit(True node, Table table)
         {
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(False node, Table table)
+        private Type Visit(False node, Table table)
         {
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(IntegerLiteral node, Table table)
+        private Type Visit(IntegerLiteral node, Table table)
         {
             var intStr = node.AnchorToken.Lexeme;
 
@@ -655,118 +655,118 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
-        public Type Visit(StringLiteral node, Table table)
+        private Type Visit(StringLiteral node, Table table)
         {
             return Type.STRING;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(And node, Table table)
+        private Type Visit(And node, Table table)
         {
             VisitBinaryOperator("and", node, Type.BOOLEAN, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Xor node, Table table)
+        private Type Visit(Xor node, Table table)
         {
             VisitBinaryOperator("xor", node, Type.BOOLEAN, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Or node, Table table)
+        private Type Visit(Or node, Table table)
         {
             VisitBinaryOperator("or", node, Type.BOOLEAN, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Equal node, Table table)
+        private Type Visit(Equal node, Table table)
         {
             VisitBinaryOperatorEquality("=", node, Type.BOOLEAN, Type.INTEGER, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(NotEqual node, Table table)
+        private Type Visit(NotEqual node, Table table)
         {
             VisitBinaryOperatorEquality("<>", node, Type.BOOLEAN, Type.INTEGER, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Smaller node, Table table)
+        private Type Visit(Smaller node, Table table)
         {
             VisitBinaryOperator("<", node, Type.INTEGER, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Greater node, Table table)
+        private Type Visit(Greater node, Table table)
         {
             VisitBinaryOperator(">", node, Type.INTEGER, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(SmallerEq node, Table table)
+        private Type Visit(SmallerEq node, Table table)
         {
             VisitBinaryOperator("<=", node, Type.INTEGER, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(GreaterEq node, Table table)
+        private Type Visit(GreaterEq node, Table table)
         {
             VisitBinaryOperator(">=", node, Type.INTEGER, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Plus node, Table table)
+        private Type Visit(Plus node, Table table)
         {
             VisitBinaryOperator("+", node, Type.INTEGER, table);
             return Type.INTEGER;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Minus node, Table table)
+        private Type Visit(Minus node, Table table)
         {
             VisitBinaryOperator("-", node, Type.INTEGER, table);
             return Type.INTEGER;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Mul node, Table table)
+        private Type Visit(Mul node, Table table)
         {
             VisitBinaryOperator("*", node, Type.INTEGER, table);
             return Type.INTEGER;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Div node, Table table)
+        private Type Visit(Div node, Table table)
         {
             VisitBinaryOperator("div", node, Type.INTEGER, table);
             return Type.INTEGER;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Rem node, Table table)
+        private Type Visit(Rem node, Table table)
         {
             VisitBinaryOperator("rem", node, Type.INTEGER, table);
             return Type.INTEGER;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Not node, Table table)
+        private Type Visit(Not node, Table table)
         {
             VisitBinaryOperatorNegation("not", node, Type.BOOLEAN, table);
             return Type.BOOLEAN;
         }
 
         //-----------------------------------------------------------
-        public Type Visit(Negative node, Table table)
+         Type Visit(Negative node, Table table)
         {
             VisitBinaryOperatorNegation("-", node, Type.INTEGER, table);
             return Type.INTEGER;
