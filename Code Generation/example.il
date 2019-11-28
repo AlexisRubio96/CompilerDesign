@@ -7,6 +7,8 @@
 .class public 'ChimeraProgram' extends ['mscorlib']'System'.'Object' {
 	.method public static void 'start'() {
 		.entrypoint
+		ldc.i4 1200
+call void class ['chimeralib']'Chimera'.'Utils'::'WrInt'(int32)
 		ret
 	}
 }
