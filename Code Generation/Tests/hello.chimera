@@ -5,5 +5,6 @@
 
 program                     // The start of the program.
     WrStr("Hello, World!"); // A simple message.
+    WrInt(1);
     WrLn();                 // Don't forget to write a newline.
 end;                        // The end of the program.

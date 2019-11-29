@@ -14,7 +14,11 @@ namespace Chimera
     public class GlobalProcedure
     {
 
-        Boolean IsPredefined;
+        public Boolean IsPredefined
+        {
+            get;
+            private set;
+        }
         public Type ReturnType
         {
             get;

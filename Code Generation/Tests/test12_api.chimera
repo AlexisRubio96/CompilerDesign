@@ -1,0 +1,3 @@
+program
+	WrInt(2);	
+end;              
