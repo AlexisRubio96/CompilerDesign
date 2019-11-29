@@ -12,8 +12,14 @@ namespace Chimera {
 
     public class Utils {
 
-        public static void WrInt(int i) {
+        public static void WrInt(int i)
+        {
             Console.WriteLine(i);
+        }
+
+        public static void WrBool(bool b)
+        {
+            Console.WriteLine(b);
         }
     }
 }

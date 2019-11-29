@@ -17,6 +17,7 @@ namespace Chimera {
             new Dictionary<Type, string>() {
                 { Type.VOID, "void" },
                 { Type.INTEGER, "int32"},
+                { Type.BOOLEAN, "bool"},
                 { Type.STRING, "not implemented"},
             };
 
@@ -105,6 +106,18 @@ namespace Chimera {
         { 
             var intValue = Convert.ToInt32(node.AnchorToken.Lexeme);
             return "\t\tldc.i4 " + intValue  + "\n";
+        }
+
+        //-----------------------------------------------------------
+        public string Visit(True node, Table table)
+        {
+            return "\t\tldc.i4.1\n";
+        }
+
+        //-----------------------------------------------------------
+        public string Visit(False node, Table table)
+        {
+            return "\t\tldc.i4.0\n";
         }
 
         //-----------------------------------------------------------
