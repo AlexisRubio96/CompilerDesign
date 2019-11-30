@@ -52,27 +52,31 @@ namespace Chimera {
         public static String CatStr(String s1,String s2){
             return s1+s2;
         }
-       public static int LenLstInt(List<int> lst){
-            return lst.Count;
+      	 public static int LenLstInt(int[] lst){
+            return lst.Length;
         }
-         public static int LenLstStr(List<String> lst){
-            return lst.Count;
+         public static int LenLstStr(String[] lst){
+            return lst.Length;
         }
-        public static int LenLstBool(List<Boolean> lst){
-            return lst.Count;
+        public static int LenLstBool(Boolean[] lst){
+            return lst.Length;
         }
-       	public static List<int> NewLstInt(int size){
-            List<int> L = new List<int> ( new int[size] );
+       	public static int[] NewLstInt(int size){
+            int[] L = new int[size];
             return L;
         }
-        public static List<string> NewLstStr(int size){
-            List<string> L = new List<string> ( new string[size] );
+        public static String[] NewLstInt(int size){
+            String[] L = new String[size];
+            for(int i = 0;i < L.Length; i++ ){
+                L[i] = "";
+            }
             return L;
         }
-        public static List<bool> NewLsBool(int size){
-            List<bool> L = new List<bool> ( new bool[size] );
+       public static bool[] NewLstInt(int size){
+            bool[] L = new bool[size];
             return L;
         }
+}
         public static String IntToStr(int i){
 		    return i.ToString();
         }
