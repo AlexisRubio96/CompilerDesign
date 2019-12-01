@@ -29,6 +29,15 @@ namespace Chimera {
                 { Type.STRING, "string"}
             };
 
+        //-----------------------------------------------------------    
+        static readonly IDictionary<Type, string> CILTokcatTypes =
+            new Dictionary<Type, string>() {
+                { Type.VOID, "void" },
+                { Type.BOOLEAN, "bool"},
+                { Type.INTEGER, "int32"},
+                { Type.STRING, "string"}
+            };
+
         //-----------------------------------------------------------
         public GlobalSymbolTable GSTable
         {
@@ -56,15 +65,83 @@ namespace Chimera {
                 + ".assembly 'chimera' {}\n\n"
                 + ".assembly extern 'chimeralib' {}\n\n"
                 + ".class public 'ChimeraProgram' extends "
-                + "['mscorlib']'System'.'Object' {\n"
+                + "['mscorlib']'System'.'Object' {\n\n"
+                + DeclareGlobals() + "\n"
+                + "\t.method public static void '.init' () {\n"
+                + Visit((dynamic) node[0], GSTable) //Constant declaration list
+                + Visit((dynamic) node[1], GSTable) //Variable declaration list
+                + "\t\tret\n"
+                + "\t}\n\n"
                 + "\t.method public static void 'main'() {\n"
                 + "\t\t.entrypoint\n"
-                + VisitChildren((dynamic)node, GSTable)
+                + "\t\tcall void class 'ChimeraProgram'::'.init'()\n"
+                + Visit((dynamic) node[3], GSTable) //statement
                 +"\t\tret\n"
                 + "\t}\n"
                 + "}\n";
         }
 
+        private string DeclareGlobals()
+        {
+            var sb = new StringBuilder();
+            foreach (var gs in GSTable)
+            {
+                sb.Append("\t.field public static " + CILTypes[gs.Value.TheType] + " '" + gs.Key + "'\n");
+            }
+            return sb.ToString();
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(ConstantDeclarationList node, Table table)
+        {
+            return VisitChildren(node, table);
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(ConstantDeclaration node, Table table)
+        {
+            string retString = "";
+            if (table is GlobalSymbolTable)
+            {
+                retString += Visit((dynamic)node[0], table);
+                retString += "\t\tstsfld " + CILTypes[GSTable[node.AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::" + "'" + node.AnchorToken.Lexeme + "'\n";
+            }
+
+            return retString;
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(VariableDeclarationList node, Table table)
+        {
+            return VisitChildren(node, table);
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(VariableDeclaration node, Table table)
+        {
+            string retString = "";
+            foreach (var n in node[0])
+            {
+                retString += Visit((dynamic)node[1], table);
+                retString += "\t\tstsfld " + CILTypes[GSTable[n.AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::" + "'" + n.AnchorToken.Lexeme + "'\n";
+            }
+            return retString;
+
+            return Visit((dynamic) node[0], table);
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(SimpleType node, Table table)
+        {
+            var tokcat = node.AnchorToken.Category;
+            if (tokcat == TokenCategory.BOOLEAN)
+                return "\t\tldc.i4.0\n";
+            if (tokcat == TokenCategory.INTEGER)
+                return "\t\tldc.i4.0\n";
+            if (tokcat == TokenCategory.STRING)
+                return "\t\tldstr \"" + "\"\n";
+            return "!!ERROR!!";
+        }
 
         //-----------------------------------------------------------
         private string Visit(Node node, Table table)
@@ -72,7 +149,7 @@ namespace Chimera {
             Console.WriteLine(node + " visit not implemented yet for code generation");
             return "";
         }
-       
+
         //-----------------------------------------------------------
         private string Visit(StatementList node, Table table)
         {
@@ -157,14 +234,17 @@ namespace Chimera {
         {
             return VisitBinaryOperator("div", node, table);
         }
-           //-----------------------------------------------------------
+
+        //-----------------------------------------------------------
         public string Visit(Rem node, Table table)
         {
             return VisitBinaryOperator("rem", node, table);
         }
-          public string Visit(Negative node, Table table)
+
+        //-----------------------------------------------------------
+        public string Visit(Negative node, Table table)
         {
-            return Visit((dynamic)node[0],table)+"\n\t\tneg\n";
+            return Visit((dynamic)node[0],table) + "\n\t\tneg\n";
         }
 
         //-----------------------------------------------------------
@@ -192,7 +272,8 @@ namespace Chimera {
         {
             return VisitBinaryOperator("xor", node, table);
         }
-          //-----------------------------------------------------------
+
+        //-----------------------------------------------------------
         public string Visit(Not node, Table table)
         {
             return String.Format(
@@ -202,14 +283,14 @@ namespace Chimera {
                 Visit((dynamic)node[0], table));
         }
 
-
         //-----------------------------------------------------------
         public string Visit(Equal node, Table table)
         {
             return VisitBinaryOperator("ceq", node, table);
         }
-         //-----------------------------------------------------------
-         public string Visit(NotEqual node, Table table)
+
+        //-----------------------------------------------------------
+        public string Visit(NotEqual node, Table table)
         {
             return String.Format(
             "{0}{1}"
@@ -219,6 +300,7 @@ namespace Chimera {
                 Visit((dynamic)node[0], table),
                 Visit((dynamic)node[1], table));
         }
+
         //-----------------------------------------------------------
         public string Visit(Smaller node, Table table)
         {
@@ -226,38 +308,40 @@ namespace Chimera {
         }
 
         //-----------------------------------------------------------
-          public string Visit(Greater node, Table table)
+        public string Visit(Greater node, Table table)
         {
             return VisitBinaryOperator("cgt", node, table);
         }
-          //-----------------------------------------------------------
+
+        //-----------------------------------------------------------
         public string Visit(GreaterEq node, Table table)
         {
             string label = GenerateLabel();
             return String.Format(
-           
+
            "ldc.i4.1\n"
-            +"{1}{2}"
-            +"\t\tbge {0}\n"
-            +"\t\tpop\n"
-            +"\t\tldc.i4.0\n"
-            +"\t\t{0}:\n",
+            + "{1}{2}"
+            + "\t\tbge {0}\n"
+            + "\t\tpop\n"
+            + "\t\tldc.i4.0\n"
+            + "\t\t{0}:\n",
                 label,
                 Visit((dynamic)node[0], table),
                 Visit((dynamic)node[1], table));
         }
-           //-----------------------------------------------------------
-          public string Visit(SmallerEq node, Table table)
+
+        //-----------------------------------------------------------
+        public string Visit(SmallerEq node, Table table)
         {
             string label = GenerateLabel();
             return String.Format(
-           
+
            "ldc.i4.1\n"
-            +"{1}{2}"
-            +"\t\tble {0}\n"
-            +"\t\tpop\n"
-            +"\t\tldc.i4.0\n"
-            +"\t\t{0}:\n",
+            + "{1}{2}"
+            + "\t\tble {0}\n"
+            + "\t\tpop\n"
+            + "\t\tldc.i4.0\n"
+            + "\t\t{0}:\n",
                 label,
                 Visit((dynamic)node[0], table),
                 Visit((dynamic)node[1], table));

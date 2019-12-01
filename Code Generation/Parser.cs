@@ -176,41 +176,37 @@ namespace Chimera
         {
             var result = new Program();
 
+            var constantDeclarationList = new ConstantDeclarationList();
             if (CurrentToken == TokenCategory.CONST)
             {
-                var constantDeclarationList = new ConstantDeclarationList()
-                    { AnchorToken = Expect(TokenCategory.CONST) };
+                Expect(TokenCategory.CONST);
                 do
                 {
                     constantDeclarationList.Add(ConstantDeclaration());
                 } while (CurrentToken == TokenCategory.IDENTIFIER);
-
-                result.Add(constantDeclarationList);        
             }
+            result.Add(constantDeclarationList);
 
+            var variableDeclarationList = new VariableDeclarationList();
             if (CurrentToken == TokenCategory.VAR)
             {
-                var variableDeclarationList = new VariableDeclarationList()
-                    { AnchorToken = Expect(TokenCategory.VAR) };
+                Expect(TokenCategory.VAR);
                 do
                 {
                     variableDeclarationList.Add(VariableDeclaration());
                 } while (CurrentToken == TokenCategory.IDENTIFIER);
-
-                result.Add(variableDeclarationList);
             }
+            result.Add(variableDeclarationList);
 
+            var procedureDeclarationList = new ProcedureDeclarationList();
             if (CurrentToken == TokenCategory.PROCEDURE)
             {
-                var procedureDeclarationList = new ProcedureDeclarationList();
-
                 do
                 {
                     procedureDeclarationList.Add(ProcedureDeclaration());
                 } while (CurrentToken == TokenCategory.PROCEDURE);
-
-                result.Add(procedureDeclarationList);
-           }
+            }
+            result.Add(procedureDeclarationList);
 
             Expect(TokenCategory.PROGRAM);
 
