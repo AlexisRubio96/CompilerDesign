@@ -7,4 +7,6 @@ program
     WrBool(true xor false); //true     
     WrBool((true xor false) and (true xor true)); //false
     WrBool(false xor true xor false xor true xor true); //true
+    WrBool(not true); //false
+    WrBool(not(false or false and (true or false)));//true
 end;
