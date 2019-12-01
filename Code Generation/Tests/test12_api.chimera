@@ -1,4 +1,6 @@
 program
 	WrInt(1);	
 	WrBool(true);
+	WrLn();
+	WrStr("creme""s");
 end;              

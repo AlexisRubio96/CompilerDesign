@@ -24,9 +24,9 @@ namespace Chimera {
         static readonly IDictionary<Type, string> CILTypes =
             new Dictionary<Type, string>() {
                 { Type.VOID, "void" },
-                { Type.INTEGER, "int32"},
                 { Type.BOOLEAN, "bool"},
-                { Type.STRING, "not implemented"}
+                { Type.INTEGER, "int32"},          
+                { Type.STRING, "string"}
             };
 
         //-----------------------------------------------------------
@@ -110,13 +110,6 @@ namespace Chimera {
         }
 
         //-----------------------------------------------------------
-        public string Visit(IntegerLiteral node, Table table)
-        { 
-            var intValue = Convert.ToInt32(node.AnchorToken.Lexeme);
-            return "\t\tldc.i4 " + intValue  + "\n";
-        }
-
-        //-----------------------------------------------------------
         public string Visit(True node, Table table)
         {
             return "\t\tldc.i4.1\n";
@@ -126,6 +119,19 @@ namespace Chimera {
         public string Visit(False node, Table table)
         {
             return "\t\tldc.i4.0\n";
+        }
+
+        //-----------------------------------------------------------
+        public string Visit(IntegerLiteral node, Table table)
+        {
+            var intValue = Convert.ToInt32(node.AnchorToken.Lexeme);
+            return "\t\tldc.i4 " + intValue + "\n";
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(StringLiteral node, Table table)
+        {
+            return "\t\tldstr \""+ node.AnchorToken.Lexeme.Replace("\"", "\\\"") + "\"\n";
         }
 
         //-----------------------------------------------------------

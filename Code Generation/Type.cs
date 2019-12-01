@@ -17,6 +17,7 @@ namespace Chimera
         LIST_OF_BOOLEAN,
         LIST_OF_STRING,
         LIST_OF_INTEGER,
+        LIST_OF_ANYTHING,
         VOID
     }
 }

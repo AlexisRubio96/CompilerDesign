@@ -296,7 +296,10 @@ namespace Chimera
             Type leftExpressionType = Visit((dynamic) node[0], table);
             Type rightExpressionType = Visit((dynamic) node[1], table);
             if (leftExpressionType != rightExpressionType)
-                throw new SemanticError("Expecting type " + leftExpressionType + " instead of " + rightExpressionType + " in assignment statement", node.AnchorToken);
+            {
+                if (!((leftExpressionType == Type.LIST_OF_BOOLEAN || leftExpressionType == Type.LIST_OF_INTEGER || leftExpressionType == Type.LIST_OF_STRING) && rightExpressionType == Type.LIST_OF_ANYTHING))
+                    throw new SemanticError("Expecting type " + leftExpressionType + " instead of " + rightExpressionType + " in assignment statement", node.AnchorToken);
+            }
 
             if (node[0] is Identifier)
             {
@@ -622,7 +625,7 @@ namespace Chimera
                 throw new TypeAccessException("Expecting one of the following node types: BOOLEAN, INTEGER, STRING");
             }
 
-            return Type.VOID;
+            return Type.LIST_OF_ANYTHING;
         }
 
         //-----------------------------------------------------------

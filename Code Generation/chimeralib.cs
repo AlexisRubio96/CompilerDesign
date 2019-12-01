@@ -20,6 +20,11 @@ namespace Chimera
             Console.WriteLine(i);
         }
 
+        public static void WrStr(string s)
+        {
+            Console.WriteLine(s);
+        }
+
         public static void WrBool(bool b)
         {
             Console.WriteLine(b);
