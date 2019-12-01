@@ -24,4 +24,5 @@ chimera.exe: Driver.cs Scanner.cs Token.cs TokenCategory.cs Parser.cs SyntaxErro
 
 			
 clean:
-	rm chimera.exe
+	rm *.exe
+	rm *.il
