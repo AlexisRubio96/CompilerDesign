@@ -3,4 +3,8 @@ var
 	name: string;
 	isReal: boolean;
 program
+	avg := 2;
+	num := 5;
+	count := num + avg;
+	WrInt(count);
 end;

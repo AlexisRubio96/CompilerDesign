@@ -29,15 +29,6 @@ namespace Chimera {
                 { Type.STRING, "string"}
             };
 
-        //-----------------------------------------------------------    
-        static readonly IDictionary<Type, string> CILTokcatTypes =
-            new Dictionary<Type, string>() {
-                { Type.VOID, "void" },
-                { Type.BOOLEAN, "bool"},
-                { Type.INTEGER, "int32"},
-                { Type.STRING, "string"}
-            };
-
         //-----------------------------------------------------------
         public GlobalSymbolTable GSTable
         {
@@ -126,8 +117,6 @@ namespace Chimera {
                 retString += "\t\tstsfld " + CILTypes[GSTable[n.AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::" + "'" + n.AnchorToken.Lexeme + "'\n";
             }
             return retString;
-
-            return Visit((dynamic) node[0], table);
         }
 
         //-----------------------------------------------------------
@@ -154,6 +143,22 @@ namespace Chimera {
         private string Visit(StatementList node, Table table)
         {
             return VisitChildren(node, table);
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(AssignmentStatement node, Table table)
+        {
+            string retString = "";
+            if (table is GlobalSymbolTable)
+            {
+                retString += Visit((dynamic)node[1], table);
+                if (node[0] is Identifier)
+                {
+                    retString += "\t\tstsfld " + CILTypes[GSTable[node[0].AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::" + "'" + node[0].AnchorToken.Lexeme + "'\n";
+                }
+
+            }
+            return retString;
         }
 
         //-----------------------------------------------------------
@@ -184,6 +189,16 @@ namespace Chimera {
             }
 
             return retString;
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(Identifier node, Table table)
+        {
+            if (table is GlobalSymbolTable)
+            {
+                return "\t\tldsfld " + CILTypes[GSTable[node.AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::'" + node.AnchorToken.Lexeme + "'\n";
+            }
+            return "";
         }
 
         //-----------------------------------------------------------
@@ -346,21 +361,6 @@ namespace Chimera {
                 Visit((dynamic)node[0], table),
                 Visit((dynamic)node[1], table));
         }
-
-        //-----------------------------------------------------------
-        public string Visit(IfStatement node, Table table)
-        {
-
-            var label = GenerateLabel();
-
-            return String.Format(
-                "{1}\t\tbrfalse '{0}'\n{2}\t'{0}':\n",
-                label,
-                Visit((dynamic)node[0], table),
-                Visit((dynamic)node[1], table)
-            );
-        }
-        
 
         private string VisitChildren(Node node, Table table)
         {
