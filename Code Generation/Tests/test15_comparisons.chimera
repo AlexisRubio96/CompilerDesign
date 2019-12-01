@@ -1,0 +1,6 @@
+program
+    //WrBool(false = false);//true
+    //WrBool(false = true);//false
+    //WrBool(1 = 2);//false
+    WrBool(true or true);//true
+end;

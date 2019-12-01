@@ -11,14 +11,19 @@ using System.Collections.Generic;
 namespace Chimera {
 
     class CILGenerator {
+        //-----------------------------------------------------------
+        int labelCounter = 0;
 
         //-----------------------------------------------------------
+        string GenerateLabel() {
+            return String.Format("${0:000000}", labelCounter++);
+        }    
         static readonly IDictionary<Type, string> CILTypes =
             new Dictionary<Type, string>() {
                 { Type.VOID, "void" },
                 { Type.INTEGER, "int32"},
                 { Type.BOOLEAN, "bool"},
-                { Type.STRING, "not implemented"},
+                { Type.STRING, "not implemented"}
             };
 
         //-----------------------------------------------------------
@@ -41,7 +46,6 @@ namespace Chimera {
             GSTable = gsTable;
             GPTable = gpTable;
         }
-
         //-----------------------------------------------------------
         public string Visit(Program node)
         {
@@ -58,13 +62,14 @@ namespace Chimera {
                 + "}\n";
         }
 
+
         //-----------------------------------------------------------
         private string Visit(Node node, Table table)
         {
-            Console.WriteLine(node + " visit not implemented yet");
+            Console.WriteLine(node + " visit not implemented yet for code generation");
             return "";
         }
-
+       
         //-----------------------------------------------------------
         private string Visit(StatementList node, Table table)
         {
@@ -119,8 +124,72 @@ namespace Chimera {
         {
             return "\t\tldc.i4.0\n";
         }
+        
+        //-----------------------------------------------------------
+        
+        public string Visit(Plus node, Table table) {
+        
+            return VisitBinaryOperator("add.ovf",node,table);
+        }
 
         //-----------------------------------------------------------
+        
+        public string Visit(Mul node, Table table) {
+            return VisitBinaryOperator("mul.ovf", node, table);
+        }
+        //-----------------------------------------------------------
+        public string Visit(Minus node, Table table) {
+            return VisitBinaryOperator("sub.ovf", node, table);
+        }
+        //-----------------------------------------------------------
+         public string Visit(Div node, Table table) {
+            return VisitBinaryOperator("div", node, table);
+        }
+        //-----------------------------------------------------------
+          public string Visit(And node, Table table) {
+              string label = GenerateLabel();
+              return String.Format(
+                "{1}\t\tbrfalse {0}\n"//if {1} is false move to tag 0, else perform full AND
+                +VisitBinaryOperator("and", node, table)
+                +"\t\t{0}:  ldc.i4.0\n",
+                label,
+                Visit((dynamic) node[0],table),
+                Visit((dynamic) node[1],table)
+            );
+        }
+        //-----------------------------------------------------------
+           public string Visit(Or node, Table table) {
+              string label = GenerateLabel();
+              return String.Format(
+                "{1}\t\tbrtrue '{0}'\n"//if {1} is false move to tag 0, else perform full AND
+                +VisitBinaryOperator("or", node, table)
+                +"\t\t'{0}':  nop\n",
+                label,
+                Visit((dynamic) node[0],table),
+                Visit((dynamic) node[1],table)
+            );
+        }
+        //-----------------------------------------------------------
+           public string Visit(Xor node, Table table) {
+            return VisitBinaryOperator("xor", node, table);
+        }
+        //-----------------------------------------------------------
+
+           public string Visit(Equal node, Table table){
+            return VisitBinaryOperator("ceq",node,table);
+        }
+         public string Visit(IfStatement node, Table table) {
+
+            var label = GenerateLabel();
+
+            return String.Format(
+                "{1}\t\tbrfalse '{0}'\n{2}\t'{0}':\n",
+                label,
+                Visit((dynamic) node[0], table),
+                Visit((dynamic) node[1], table)
+            );
+        }
+
         private string VisitChildren(Node node, Table table)
         {
             var sb = new StringBuilder();
@@ -130,5 +199,16 @@ namespace Chimera {
             }
             return sb.ToString();
         }
+    
+    
+         string VisitBinaryOperator(string op, Node node, Table table) {
+            return Visit((dynamic) node[0],table)
+                + Visit((dynamic) node[1],table)
+                + "\t\t"
+                + op 
+                + "\n";            
+        }
+
+       
     }
 }

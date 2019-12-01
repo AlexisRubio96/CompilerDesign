@@ -1,0 +1,21 @@
+program
+	WrInt(1000 div 10 div 10 div 10);//1
+	WrLn();
+	WrInt(1+1);//2
+	WrLn();
+	WrInt(1+1+1);//3
+	WrLn();
+	WrInt(2*2);//4
+	WrLn();
+	WrInt(2*2+1);//5
+	WrLn();
+	WrInt(1*2*3);//6
+	WrLn();
+	WrInt(4*2-1);//7
+	WrLn();
+	WrInt(12-(2*2));//8
+	WrLn();
+	WrInt((3*3*3*3) div 9);//9
+	WrLn();
+	WrInt(((1+9)*100) div 100);    
+end;          

@@ -1,0 +1,10 @@
+program
+    WrBool(true and false); //false
+    WrBool(true and true); //true
+    WrBool(true and true and true and true and false); //false
+    WrBool(true or false); //true
+    WrBool(false and (true or false)); //false
+    WrBool(true xor false); //true     
+    WrBool((true xor false) and (true xor true)); //false
+    WrBool(false xor true xor false xor true xor true); //true
+end;
