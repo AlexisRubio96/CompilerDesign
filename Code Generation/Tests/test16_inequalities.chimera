@@ -1,0 +1,8 @@
+program
+    WrBool(true <> false); //true
+    WrBool(1 <> 1); //false
+    WrBool(2 < 3); //true
+    WrBool(2 > 3); //false
+    WrBool(3 >= 3); //true
+    WrBool(3 <= 1); //false
+end;

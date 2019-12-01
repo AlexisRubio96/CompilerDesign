@@ -151,6 +151,15 @@ namespace Chimera {
         {
             return VisitBinaryOperator("div", node, table);
         }
+           //-----------------------------------------------------------
+        public string Visit(Rem node, Table table)
+        {
+            return VisitBinaryOperator("rem", node, table);
+        }
+          public string Visit(Negative node, Table table)
+        {
+            return Visit((dynamic)node[0],table)+"\n\t\tneg\n";
+        }
 
         //-----------------------------------------------------------
         public string Visit(And node, Table table)
@@ -177,11 +186,75 @@ namespace Chimera {
         {
             return VisitBinaryOperator("xor", node, table);
         }
+          //-----------------------------------------------------------
+        public string Visit(Not node, Table table)
+        {
+            return String.Format(
+            "{0}"
+            +"\t\tldc.i4.0\n"
+            +"\t\tceq\n",
+                Visit((dynamic)node[0], table));
+        }
+
 
         //-----------------------------------------------------------
         public string Visit(Equal node, Table table)
         {
             return VisitBinaryOperator("ceq", node, table);
+        }
+         //-----------------------------------------------------------
+         public string Visit(NotEqual node, Table table)
+        {
+            return String.Format(
+            "{0}{1}"
+            +"\t\tceq\n"
+            +"\t\tldc.i4.0\n"
+            +"\t\tceq\n",
+                Visit((dynamic)node[0], table),
+                Visit((dynamic)node[1], table));
+        }
+        //-----------------------------------------------------------
+        public string Visit(Smaller node, Table table)
+        {
+            return VisitBinaryOperator("clt", node, table);
+        }
+
+        //-----------------------------------------------------------
+          public string Visit(Greater node, Table table)
+        {
+            return VisitBinaryOperator("cgt", node, table);
+        }
+          //-----------------------------------------------------------
+        public string Visit(GreaterEq node, Table table)
+        {
+            string label = GenerateLabel();
+            return String.Format(
+           
+           "ldc.i4.1\n"
+            +"{1}{2}"
+            +"\t\tbge {0}\n"
+            +"\t\tpop\n"
+            +"\t\tldc.i4.0\n"
+            +"\t\t{0}:\n",
+                label,
+                Visit((dynamic)node[0], table),
+                Visit((dynamic)node[1], table));
+        }
+           //-----------------------------------------------------------
+          public string Visit(SmallerEq node, Table table)
+        {
+            string label = GenerateLabel();
+            return String.Format(
+           
+           "ldc.i4.1\n"
+            +"{1}{2}"
+            +"\t\tble {0}\n"
+            +"\t\tpop\n"
+            +"\t\tldc.i4.0\n"
+            +"\t\t{0}:\n",
+                label,
+                Visit((dynamic)node[0], table),
+                Visit((dynamic)node[1], table));
         }
 
         //-----------------------------------------------------------
@@ -197,6 +270,7 @@ namespace Chimera {
                 Visit((dynamic)node[1], table)
             );
         }
+        
 
         private string VisitChildren(Node node, Table table)
         {

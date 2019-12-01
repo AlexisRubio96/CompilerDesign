@@ -17,5 +17,13 @@ program
 	WrLn();
 	WrInt((3*3*3*3) div 9);//9
 	WrLn();
-	WrInt(((1+9)*100) div 100);    
+	WrInt(((1+9)*100) div 100); //10
+	WrLn();
+	WrInt((21 rem 10)+10);
+	WrLn();
+	WrInt((29 rem 10)+3);
+	WrLn();
+	WrInt(-13); 
+	WrLn();
+	WrInt(-(-13)+1);                     
 end;          
