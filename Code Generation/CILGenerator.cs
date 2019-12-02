@@ -275,6 +275,37 @@ namespace Chimera {
         }
 
         //-----------------------------------------------------------
+        private string Visit(Call node, Table table)
+        {
+            var retString = VisitChildren(node, table);
+
+            var procName = node.AnchorToken.Lexeme;
+            var proc = GPTable[procName];
+            var procParamsTypes = "";
+            var procParams = proc.getParameters();
+
+            if (procParams.Length > 0)
+            {
+                procParamsTypes = CILTypes[procParams[0].LocalType];
+                for (var i = 1; i < procParams.Length; i++)
+                {
+                    procParamsTypes += "," + CILTypes[procParams[i].LocalType];
+                }
+            }
+
+            if (proc.IsPredefined)
+            {
+                retString += "\t\tcall " + CILTypes[proc.ReturnType] + " class ['chimeralib']'Chimera'.'Utils'::'" + procName + "'(" + procParamsTypes + ")\n";
+            }
+            else
+            {
+                retString += "\t\tcall " + CILTypes[proc.ReturnType]  + " class 'ChimeraProgram'::'" + procName + "'(" + procParamsTypes + ")\n";
+            }
+
+            return retString;
+        }
+
+        //-----------------------------------------------------------
         private string Visit(Identifier node, Table table)
         {
             var identifierName = node.AnchorToken.Lexeme;

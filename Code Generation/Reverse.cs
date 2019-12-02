@@ -13,27 +13,15 @@ namespace Chimera
     public class Reverse
     {
 
-        public static void one()
+        public static int one()
         {
-            int x = 0;
-        }
-
-	public static int two(string s)
-        {
-            int x, y, z;
-	    return 0;
-        }
-
-	public static int[] three(bool a, int x)
-        {
-            int[] r = {0};
-	    return r;
+            return 0;
         }
 
         //-----------------------------------------------------------
         public static void Main(string[] args)
         {
-		
+		int x = one();
         }
     }
 }

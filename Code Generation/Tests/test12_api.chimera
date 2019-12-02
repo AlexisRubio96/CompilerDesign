@@ -1,6 +1,5 @@
+var x: string;
 program
-	WrInt(1);	
-	WrBool(true);
-	WrLn();
-	WrStr("creme""s");
+	x := IntToStr(1901);
+	WrStr(x);
 end;              
