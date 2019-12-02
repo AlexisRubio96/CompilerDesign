@@ -1,11 +1,13 @@
-procedure printSum
-(a, b: integer;);
+var result: integer;
+procedure Sum
+(a, b: integer;): integer;
 const epsilon := 3;
 var result: integer;
 begin
 	result := a + b + epsilon;
-	WrInt(result);
+	return result - epsilon;
 end;
 program
-printSum(-4,9);
+result := Sum(15, 9);
+WrInt(result);
 end;

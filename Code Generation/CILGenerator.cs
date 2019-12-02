@@ -245,6 +245,13 @@ namespace Chimera {
         }
 
         //-----------------------------------------------------------
+        private string Visit(ReturnStatement node, Table table)
+        {
+            return Visit((dynamic) node[0], table)
+                + "\t\tret";
+        }
+
+        //-----------------------------------------------------------
         private string Visit(CallStatement node, Table table)
         {
             var retString = VisitChildren(node, table);
