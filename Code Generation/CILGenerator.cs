@@ -225,6 +225,10 @@ namespace Chimera {
                 {
                     retString += "\t\tstsfld " + CILTypes[GSTable[node[0].AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::" + "'" + node[0].AnchorToken.Lexeme + "'\n";
                 }
+                else
+                {
+                    //Assignment for list index expression
+                }
 
             }
             else
@@ -249,6 +253,10 @@ namespace Chimera {
                     {
                         retString += "\t\tstsfld " + CILTypes[GSTable[name].TheType] + " 'ChimeraProgram'::" + "'" + name + "'\n";
                     }
+                }
+                else
+                {
+                    //Assignment for list index expression
                 }
             }
             return retString;
@@ -328,7 +336,7 @@ namespace Chimera {
         private string Visit(ReturnStatement node, Table table)
         {
             return Visit((dynamic) node[0], table)
-                + "\t\tret";
+                + "\t\tret\n";
         }
 
         //-----------------------------------------------------------

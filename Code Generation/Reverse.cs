@@ -13,15 +13,11 @@ namespace Chimera
     public class Reverse
     {
 
-        public static int one()
-        {
-            return 0;
-        }
-
         //-----------------------------------------------------------
         public static void Main(string[] args)
         {
-		int x = one();
+		bool[] x = {true, false};
+		x[0] = false || x[1];
         }
     }
 }
