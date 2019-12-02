@@ -226,10 +226,19 @@ namespace Chimera {
             }
             else
             {
+                LocalSymbolTable lstable = table as LocalSymbolTable;
                 retString += Visit((dynamic)node[1], table);
                 if (node[0] is Identifier)
                 {
-                    retString += "\t\tstloc " + node[0].AnchorToken.Lexeme + "\n";
+                    var name = node[0].AnchorToken.Lexeme;
+                    if (lstable.Contains(name))
+                    {
+                        retString += "\t\tstloc " + name + "\n";
+                    }
+                    else
+                    {
+                        retString += "\t\tstsfld " + CILTypes[GSTable[name].TheType] + " 'ChimeraProgram'::" + "'" + name + "'\n";
+                    }
                 }
             }
             return retString;

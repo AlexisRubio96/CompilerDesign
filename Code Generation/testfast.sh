@@ -1,4 +1,4 @@
-VAR="test9_procedure_declaration"
+VAR="variables"
 ./chimera.exe Tests/$VAR.chimera $VAR.il
 ilasm $VAR.il
 chmod +x $VAR.exe
