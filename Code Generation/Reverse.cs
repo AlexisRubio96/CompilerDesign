@@ -12,18 +12,28 @@ namespace Chimera
 
     public class Reverse
     {
-        public static string s;
 
-        public static void init()
+        public static void one()
         {
-            s = "1";
+            int x = 0;
+        }
+
+	public static int two(string s)
+        {
+            int x, y, z;
+	    return 0;
+        }
+
+	public static int[] three(bool a, int x)
+        {
+            int[] r = {0};
+	    return r;
         }
 
         //-----------------------------------------------------------
         public static void Main(string[] args)
         {
-            init();
-            Console.WriteLine(s);
+		
         }
     }
 }

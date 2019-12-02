@@ -1,6 +1,6 @@
 procedure myproc1();
 begin end;
-procedure myproc2();
+procedure myproc2(a, b: integer; c: string;): integer;
 begin end;
 program
 end

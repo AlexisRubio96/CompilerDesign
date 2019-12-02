@@ -1,0 +1,11 @@
+procedure printSum
+(a, b: integer;);
+const epsilon := 3;
+var result: integer;
+begin
+	result := a + b + epsilon;
+	WrInt(result);
+end;
+program
+printSum(-4,9);
+end;

@@ -63,10 +63,11 @@ namespace Chimera {
                 + Visit((dynamic) node[1], GSTable) //Variable declaration list
                 + "\t\tret\n"
                 + "\t}\n\n"
+                + Visit((dynamic) node[2], GSTable) //Procedure declaration list
                 + "\t.method public static void 'main'() {\n"
                 + "\t\t.entrypoint\n"
                 + "\t\tcall void class 'ChimeraProgram'::'.init'()\n"
-                + Visit((dynamic) node[3], GSTable) //statement
+                + Visit((dynamic) node[3], GSTable) //Statement list
                 +"\t\tret\n"
                 + "\t}\n"
                 + "}\n";
@@ -97,6 +98,14 @@ namespace Chimera {
                 retString += Visit((dynamic)node[0], table);
                 retString += "\t\tstsfld " + CILTypes[GSTable[node.AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::" + "'" + node.AnchorToken.Lexeme + "'\n";
             }
+            else
+            {
+                LocalSymbolTable lstable = table as LocalSymbolTable;
+                var consName = node.AnchorToken.Lexeme;
+                retString += "\t\t.locals init (" + CILTypes[lstable[consName].LocalType] + " '" + consName + "')\n";
+                retString += Visit((dynamic)node[0], table);
+                retString += "\t\tstloc '" + consName + "'\n";
+            }
 
             return retString;
         }
@@ -111,10 +120,27 @@ namespace Chimera {
         private string Visit(VariableDeclaration node, Table table)
         {
             string retString = "";
-            foreach (var n in node[0])
+            if (table is GlobalSymbolTable)
             {
-                retString += Visit((dynamic)node[1], table);
-                retString += "\t\tstsfld " + CILTypes[GSTable[n.AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::" + "'" + n.AnchorToken.Lexeme + "'\n";
+                foreach (var n in node[0])
+                {
+                    retString += Visit((dynamic)node[1], table);
+                    retString += "\t\tstsfld " + CILTypes[GSTable[n.AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::" + "'" + n.AnchorToken.Lexeme + "'\n";
+                }
+            }
+            else
+            {
+                LocalSymbolTable lstable = table as LocalSymbolTable;
+                retString += "\t\t.locals init (";
+                var strType = CILTypes[lstable[node[0][0].AnchorToken.Lexeme].LocalType];
+                retString += strType + " '" + node[0][0].AnchorToken.Lexeme + "'";
+                for (int i = 1;  i < node[0].Count(); i++)
+                {
+                    var n = node[0][i];
+                    retString += ", " + strType +" '" + n.AnchorToken.Lexeme + "'";
+                }
+
+                return retString + ")\n";
             }
             return retString;
         }
@@ -130,6 +156,46 @@ namespace Chimera {
             if (tokcat == TokenCategory.STRING)
                 return "\t\tldstr \"" + "\"\n";
             return "!!ERROR!!";
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(ProcedureDeclarationList node, Table table)
+        {
+            return VisitChildren(node, table);
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(ProcedureDeclaration node, Table table)
+        {
+            string retString = "";
+            var procName = node.AnchorToken.Lexeme;
+            var proc = GPTable[procName];
+            var procParamsNames = proc.getParametersNames();
+            var procStrParams = "";
+
+            if (procParamsNames.Length > 0)
+            {
+                procStrParams += CILTypes[proc.LocalSymbols[procParamsNames[0]].LocalType] + " " + procParamsNames[0];
+                for (var i = 1; i < procParamsNames.Length; i++)
+                {
+                    procStrParams += ", " + CILTypes[proc.LocalSymbols[procParamsNames[i]].LocalType] + " " + procParamsNames[i];
+                }
+            }
+
+            var body = "";
+            foreach (var n in node)
+            {
+                // 
+                if (n is ParameterDeclarationList || n is SimpleType || n is ListType) 
+                    continue;
+                body += Visit((dynamic)n, proc.LocalSymbols);
+            }
+
+            retString += "\t.method public static " + CILTypes[GPTable[procName].ReturnType] + " '" + procName + "' (" + procStrParams + ") {\n"
+                + body
+                + "\t\tret\n"
+                + "\t}\n\n";
+            return retString;
         }
 
         //-----------------------------------------------------------
@@ -158,6 +224,14 @@ namespace Chimera {
                 }
 
             }
+            else
+            {
+                retString += Visit((dynamic)node[1], table);
+                if (node[0] is Identifier)
+                {
+                    retString += "\t\tstloc " + node[0].AnchorToken.Lexeme + "\n";
+                }
+            }
             return retString;
         }
 
@@ -185,7 +259,7 @@ namespace Chimera {
             }
             else
             {
-                Console.WriteLine("Not implemented yet");
+                retString += "\t\tcall void class 'ChimeraProgram'::'" + procName + "'(" + procParamsTypes + ")\n";
             }
 
             return retString;
@@ -194,9 +268,30 @@ namespace Chimera {
         //-----------------------------------------------------------
         private string Visit(Identifier node, Table table)
         {
+            var identifierName = node.AnchorToken.Lexeme;
             if (table is GlobalSymbolTable)
             {
-                return "\t\tldsfld " + CILTypes[GSTable[node.AnchorToken.Lexeme].TheType] + " 'ChimeraProgram'::'" + node.AnchorToken.Lexeme + "'\n";
+                return "\t\tldsfld " + CILTypes[GSTable[identifierName].TheType] + " 'ChimeraProgram'::'" + identifierName + "'\n";
+            }
+            else
+            {
+
+                LocalSymbolTable lstable = table as LocalSymbolTable;
+                if (lstable.Contains(identifierName))
+                {
+                    if (lstable[identifierName].Kind == Clasification.PARAM)
+                    {
+                        return "\t\tldarg '" + identifierName + "'\n";
+                    }
+                    else
+                    {
+                        return "\t\tldloc '" + identifierName + "'\n";
+                    }
+                }
+                else
+                {
+                    return "\t\tldsfld " + CILTypes[GSTable[identifierName].TheType] + " 'ChimeraProgram'::'" + identifierName + "'\n";
+                }
             }
             return "";
         }

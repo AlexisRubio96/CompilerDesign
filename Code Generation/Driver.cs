@@ -99,8 +99,8 @@ namespace Chimera
 
                 var semantic = new SemanticAnalyzer();
                 semantic.Visit((dynamic)program);
-                Console.WriteLine(semantic.GSTable);
-                Console.WriteLine(semantic.GPTable);
+                //Console.WriteLine(semantic.GSTable);
+                //Console.WriteLine(semantic.GPTable);
                 Console.WriteLine("Semantics OK.");
 
 

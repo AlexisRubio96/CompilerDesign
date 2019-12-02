@@ -6,6 +6,7 @@ elseif 1 * 2 = 2 and 2 * 5 <> 7 then x := 2;
 elseif 8 div 9 = 72 and 2 rem 1 < 1 then x := 3;
 elseif true or false then x := 4;
 else x := 4;
+WrInt(x);
 return;
 end;
 end;

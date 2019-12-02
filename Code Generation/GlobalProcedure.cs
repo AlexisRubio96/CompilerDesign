@@ -62,6 +62,20 @@ namespace Chimera
         }
 
         //-----------------------------------------------------------
+        public string[] getParametersNames()
+        {
+            List<string> parametersNames = new List<string>();
+            foreach (var ls in LocalSymbols)
+            {
+                if (ls.Value.Kind == Clasification.PARAM)
+                    parametersNames.Add(ls.Key);
+            }
+
+            parametersNames.Sort((a, b) => LocalSymbols[a].Position.CompareTo(LocalSymbols[b].Position));
+            return parametersNames.ToArray();
+        }
+
+        //-----------------------------------------------------------
         public override string ToString()
         {
             return "IsPredifined=" + IsPredefined + " ReturnType=" + ReturnType + LocalSymbols ;
