@@ -1,12 +1,10 @@
 var x: integer;
 program
-
-if 3 + 2 = 5 and 3 - 2 = 2 then x := 1;
-elseif 1 * 2 = 2 and 2 * 5 <> 7 then x := 2;
-elseif 8 div 9 = 72 and 2 rem 1 < 1 then x := 3;
-elseif true or false then x := 4;
-else x := 4;
-WrInt(x);
-return;
+if 1 < 0 then x := 1;
+elseif 1 < 0 then x:= 2;
+elseif 1 + 2 <> 2 + 1 then x := 2; x := 3;
+else x:= 99;
 end;
+WrInt(x);
+
 end;

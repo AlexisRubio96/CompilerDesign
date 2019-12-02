@@ -245,6 +245,55 @@ namespace Chimera {
         }
 
         //-----------------------------------------------------------
+        private string Visit(IfStatement node, Table table)
+        {
+            string retString = "";
+            var lastLabel = GenerateLabel();
+            foreach (var n in node)
+            {
+                var nextClauseLabel = GenerateLabel();
+                retString += Visit((dynamic)n, table, nextClauseLabel);
+                retString += "\t\tbr " + lastLabel + "\n";
+                retString += "\t\t" + nextClauseLabel + ":\n";
+            }
+
+            retString += "\t\t" + lastLabel + ":\n";
+            return retString;
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(IfClause node, Table table, string nextClauseLabel)
+        {
+            string retString = Visit((dynamic)node[0], table);
+            retString += "\t\tbrfalse " + nextClauseLabel + "\n";
+            for (int i = 1; i < node.Count(); i++)
+            {
+                retString += Visit((dynamic)node[i], table);
+            }
+
+            return retString;
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(ElseIfClause node, Table table, string nextClauseLabel)
+        {
+            string retString = Visit((dynamic)node[0], table);
+            retString += "\t\tbrfalse " + nextClauseLabel + "\n";
+            for (int i = 1; i < node.Count(); i++)
+            {
+                retString += Visit((dynamic)node[i], table);
+            }
+
+            return retString;
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(ElseClause node, Table table, string nextClauseLabel)
+        {
+            return VisitChildren(node, table);
+        }
+
+        //-----------------------------------------------------------
         private string Visit(ReturnStatement node, Table table)
         {
             return Visit((dynamic) node[0], table)

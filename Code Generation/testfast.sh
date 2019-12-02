@@ -1,4 +1,4 @@
-VAR="test9_procedure_declaration"
+VAR="test10_if_statement"
 ./chimera.exe Tests/$VAR.chimera $VAR.il
 ilasm $VAR.il
 chmod +x $VAR.exe
