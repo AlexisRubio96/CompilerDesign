@@ -13,6 +13,9 @@ namespace Chimera {
     class CILGenerator {
 
         //-----------------------------------------------------------
+        Stack<string> loopLabels = new Stack<string>();
+
+        //-----------------------------------------------------------
         int labelCounter = 0;
 
         //-----------------------------------------------------------
@@ -175,10 +178,10 @@ namespace Chimera {
 
             if (procParamsNames.Length > 0)
             {
-                procStrParams += CILTypes[proc.LocalSymbols[procParamsNames[0]].LocalType] + " " + procParamsNames[0];
+                procStrParams += CILTypes[proc.LocalSymbols[procParamsNames[0]].LocalType] + " '" + procParamsNames[0] + "'";
                 for (var i = 1; i < procParamsNames.Length; i++)
                 {
-                    procStrParams += ", " + CILTypes[proc.LocalSymbols[procParamsNames[i]].LocalType] + " " + procParamsNames[i];
+                    procStrParams += ", " + CILTypes[proc.LocalSymbols[procParamsNames[i]].LocalType] + " '" + procParamsNames[i] + "'";
                 }
             }
 
@@ -233,7 +236,14 @@ namespace Chimera {
                     var name = node[0].AnchorToken.Lexeme;
                     if (lstable.Contains(name))
                     {
-                        retString += "\t\tstloc " + name + "\n";
+                        if (lstable[name].Kind == Clasification.PARAM)
+                        {
+                            retString += "\t\tstarg '" + name + "'\n";
+                        }
+                        else
+                        {
+                            retString += "\t\tstloc '" + name + "'\n";
+                        }   
                     }
                     else
                     {
@@ -291,6 +301,27 @@ namespace Chimera {
         private string Visit(ElseClause node, Table table, string nextClauseLabel)
         {
             return VisitChildren(node, table);
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(LoopStatement node, Table table)
+        {
+            string retString = "";
+            string loopStartLabel = GenerateLabel();
+            string loopEndLabel = GenerateLabel();
+            loopLabels.Push(loopEndLabel);
+            retString += "\t\t" + loopStartLabel + ":\n";
+            retString += VisitChildren(node, table);
+            retString += "\t\tbr " + loopStartLabel + "\n";
+            loopLabels.Pop();
+            retString += "\t\t" + loopEndLabel + ":\n";
+            return retString;
+        }
+
+        //-----------------------------------------------------------
+        private string Visit(ExitStatement node, Table table)
+        {
+            return "\t\tbr " + loopLabels.Peek() + "\n";
         }
 
         //-----------------------------------------------------------
@@ -525,7 +556,7 @@ namespace Chimera {
             string label = GenerateLabel();
             return String.Format(
 
-           "ldc.i4.1\n"
+           "\t\tldc.i4.1\n"
             + "{1}{2}"
             + "\t\tbge {0}\n"
             + "\t\tpop\n"
@@ -542,7 +573,7 @@ namespace Chimera {
             string label = GenerateLabel();
             return String.Format(
 
-           "ldc.i4.1\n"
+           "\t\tldc.i4.1\n"
             + "{1}{2}"
             + "\t\tble {0}\n"
             + "\t\tpop\n"

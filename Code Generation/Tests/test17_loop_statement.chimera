@@ -1,0 +1,8 @@
+var x: integer;
+program
+    loop
+	if x >= 4 then exit; end;
+	x := x + 1;
+    end;
+    WrInt(x);
+end;

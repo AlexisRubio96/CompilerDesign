@@ -48,28 +48,28 @@ namespace Chimera
 
         }
 
-        public static String RdStr()
+        public static string RdStr()
         {
             String input = Console.ReadLine();
             return input;
         }
 
-        public static char AtStr(String s, int i)
+        public static string AtStr(string s, int i)
         {
-            return s[i];
+            return "" + s[i];
         }
 
-        public static int LenStr(String s)
+        public static int LenStr(string s)
         {
             return s.Length;
         }
 
-        public static int CmpStr(String s1, String s2)
+        public static int CmpStr(string s1, string s2)
         {
             return string.Compare(s1, s2);
         }
 
-        public static String CatStr(String s1, String s2)
+        public static string CatStr(string s1, string s2)
         {
             return s1 + s2;
         }
@@ -79,7 +79,7 @@ namespace Chimera
             return lst.Length;
         }
 
-        public static int LenLstStr(String[] lst)
+        public static int LenLstStr(string[] lst)
         {
             return lst.Length;
         }
@@ -111,7 +111,7 @@ namespace Chimera
             return L;
         }
 
-        public static String IntToStr(int i)
+        public static string IntToStr(int i)
         {
             return i.ToString();
         }

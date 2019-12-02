@@ -1,4 +1,4 @@
-VAR="test10_if_statement"
+VAR="factorial"
 ./chimera.exe Tests/$VAR.chimera $VAR.il
 ilasm $VAR.il
 chmod +x $VAR.exe
